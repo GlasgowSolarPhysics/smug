@@ -79,6 +79,7 @@ class RadynversionModel(nn.Module):
         line_profile_size,
         atmos_size,
         num_atmos_params,
+        latent_size,
         num_inv_layers=5,
         version=None,
     ):
@@ -89,6 +90,7 @@ class RadynversionModel(nn.Module):
         self.line_profile_size = line_profile_size
         self.atmos_size = atmos_size
         self.num_atmos_params = num_atmos_params
+        self.latent_size = latent_size
         self.version = version
 
         self.model = Ff.SequenceINN(self.size)
@@ -112,13 +114,15 @@ pretrained_kwargs = {
         "line_profile_size": 30,
         "atmos_size": 50,
         "num_atmos_params": 3.0,
+        "latent_size": 150,
     },
     "1.1.1": {
         "in_out_size": 384,
         "num_lines": 2,
-        "line_profile_size": 30,
+        "line_profile_size": 31,
         "atmos_size": 50,
         "num_atmos_params": 3.0,
+        "latent_size": 150,
     },
 }
 
@@ -182,11 +186,13 @@ model_params = {
     "1.0.1": {
         "atmos_params": ["ne", "temperature", "vel"],
         "line_profiles": ["Halpha", "CaII8542"],
+        "line_half_width": [1.4, 1.0],
         "z_stratification": original_z,
     },
     "1.1.1": {
         "atmos_params": ["ne", "temperature", "vel"],
         "line_profiles": ["Halpha", "CaII8542"],
+        "line_half_width": [1.4, 1.0],
         "z_stratification": original_z,
     },
 }

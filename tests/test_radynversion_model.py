@@ -20,7 +20,8 @@ def test_valid_model_input(version):
 
     out = model(inp)[0]
     assert out.shape == inp.shape
-    out_rev = model(out, rev=True)[0]
+    with torch.no_grad():
+        out_rev = model(out, rev=True)[0]
     assert out_rev.shape == inp.shape
     # NOTE(cmo): Whilst the network is analytically invertible, there's some
     # layers with very small weights that create some noise.
