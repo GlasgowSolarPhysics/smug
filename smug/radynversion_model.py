@@ -1,6 +1,7 @@
 import FrEIA.framework as Ff
 import FrEIA.modules as Fm
 import numpy as np
+import torch
 from torch import nn
 
 
@@ -189,3 +190,35 @@ model_params = {
         "z_stratification": original_z,
     },
 }
+
+model_urls = {
+    "1.0.1": "https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.0.1.pth.tar",
+    "1.1.1": "https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar",
+}
+
+
+def pretrained_radynversion(version="1.1.1", map_location=None):
+    """Load a pretrained RADYNVERSION model. The weights will be be cached as
+    described by `torch.hub`. See their documentation for details.
+
+    Parameters
+    ----------
+    version : str, optional
+        The version number of the model to load. Default: 1.1.1
+    map_location : torch.device, optional
+        Where to remap arrays during the loading process, by default this is set
+        to "CPU" to allow loading on any platform.
+    """
+    if version not in pretrained_kwargs:
+        raise ValueError(
+            f"Unknown version '{version}' from pretrained list, expected one of {pretrained_kwargs.keys()}"
+        )
+
+    model = RadynversionModel(**pretrained_kwargs[version], version=version)
+    if map_location is None:
+        map_location = torch.device("cpu")
+    checkpoint = torch.hub.load_state_dict_from_url(
+        model_urls[version], map_location=map_location
+    )
+    model.load_state_dict(checkpoint["state_dict"])
+    return model

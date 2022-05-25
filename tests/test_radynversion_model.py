@@ -1,0 +1,35 @@
+import pytest
+import torch
+import torch.testing as tt
+from smug.radynversion_model import pretrained_radynversion
+
+
+def test_unknown_version():
+    with pytest.raises(ValueError):
+        model = pretrained_radynversion("1.2.3")
+
+
+def test_model_creation():
+    model = pretrained_radynversion()
+
+
+@pytest.mark.parametrize("version", ["1.0.1", "1.1.1"])
+def test_valid_model_input(version):
+    model = pretrained_radynversion(version)
+    inp = torch.ones(1, model.size) + 2.0
+
+    out = model(inp)[0]
+    assert out.shape == inp.shape
+    out_rev = model(out, rev=True)[0]
+    assert out_rev.shape == inp.shape
+    # NOTE(cmo): Whilst the network is analytically invertible, there's some
+    # layers with very small weights that create some noise.
+    tt.assert_allclose(out_rev, inp, rtol=5e-2, atol=5e-2)
+
+
+@pytest.mark.parametrize("version", ["1.0.1", "1.1.1"])
+def test_invalid_model_input(version):
+    model = pretrained_radynversion(version)
+    inp = torch.ones(1, model.size * 2)
+    with pytest.raises(RuntimeError):
+        model(inp)
