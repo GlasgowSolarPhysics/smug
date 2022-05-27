@@ -1,15 +1,18 @@
 import astropy.units as u
+from matplotlib import pyplot as plt
 import numpy as np
 import numpy.testing as npt
+import pickle
 import pytest
 import torch
 import torch.testing as tt
-from smug.radynversion_adapter import ClassicRadynversionAdapter
+from smug.radynversion_adapter import RadynversionAdapter
 from smug.radynversion_model import model_params, pretrained_radynversion
+from weno4 import weno4
 
 
 def test_transform_vel():
-    ad = ClassicRadynversionAdapter
+    ad = RadynversionAdapter
     v = torch.randn(50) * 20
     v_scaled = ad.transform_vel(v)
     v_prime = ad.inv_transform_vel(v_scaled)
@@ -17,7 +20,7 @@ def test_transform_vel():
 
 
 def test_transform_ne():
-    ad = ClassicRadynversionAdapter
+    ad = RadynversionAdapter
     ne = torch.logspace(17, 5, 50)
     ne_scaled = ad.transform_ne(ne)
     ne_prime = ad.inv_transform_ne(ne_scaled)
@@ -25,7 +28,7 @@ def test_transform_ne():
 
 
 def test_transform_temperature():
-    ad = ClassicRadynversionAdapter
+    ad = RadynversionAdapter
     temp = torch.logspace(4, 7, 50)
     temp_scaled = ad.transform_temperature(temp)
     temp_prime = ad.inv_transform_temperature(temp_scaled)
@@ -33,7 +36,7 @@ def test_transform_temperature():
 
 
 def test_unit_conversion():
-    ad = ClassicRadynversionAdapter
+    ad = RadynversionAdapter
 
     ne = np.logspace(17, 5, 50) << u.cm ** (-3)
     ne_m = np.logspace(23, 11, 50) << u.m ** (-3)
@@ -56,7 +59,7 @@ def test_unit_conversion():
 
 
 def test_unit_conv_fail():
-    ad = ClassicRadynversionAdapter
+    ad = RadynversionAdapter
 
     t = np.logspace(4, 7, 50) * u.J
     with pytest.raises(u.core.UnitConversionError):
@@ -64,8 +67,8 @@ def test_unit_conv_fail():
 
 
 def test_transform_atmosphere():
-    ad = ClassicRadynversionAdapter(
-        model=pretrained_radynversion(), **model_params["1.0.1"]
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
     )
 
     # NOTE(cmo): This is intentionally weird to check how the transform handles different input types
@@ -82,8 +85,8 @@ def test_transform_atmosphere():
 
 
 def test_transform_atmosphere_fails():
-    ad = ClassicRadynversionAdapter(
-        model=pretrained_radynversion(), **model_params["1.0.1"]
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
     )
 
     # NOTE(cmo): This is intentionally weird to check how the transform handles different input types
@@ -100,9 +103,7 @@ def test_transform_atmosphere_fails():
 
 
 def test_inv_transform_atmosphere():
-    ad = ClassicRadynversionAdapter(
-        model=pretrained_radynversion(), **model_params["1.1.1"]
-    )
+    ad = RadynversionAdapter(model=pretrained_radynversion(), **model_params["1.1.1"])
 
     # NOTE(cmo): This is intentionally weird to check how the transform handles different input types
     vel = torch.from_numpy((np.random.randn(50) * 20))
@@ -120,8 +121,8 @@ def test_inv_transform_atmosphere():
 
 
 def test_line_grids():
-    ad = ClassicRadynversionAdapter(
-        model=pretrained_radynversion(), **model_params["1.0.1"]
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
     )
     grids = ad.line_grids()
 
@@ -131,9 +132,7 @@ def test_line_grids():
 
 
 def test_interpolate_lines():
-    ad = ClassicRadynversionAdapter(
-        model=pretrained_radynversion(), **model_params["1.1.1"]
-    )
+    ad = RadynversionAdapter(model=pretrained_radynversion(), **model_params["1.1.1"])
     lines = {
         "Halpha": np.linspace(0, 1, 31),
         "CaII8542": np.linspace(2, 1, 31)[None, :],
@@ -148,3 +147,70 @@ def test_interpolate_lines():
 
     npt.assert_allclose(lines["Halpha"], interp_lines["Halpha"].squeeze())
     npt.assert_allclose(lines["CaII8542"], interp_lines["CaII8542"])
+
+
+def test_transform_lines():
+    ad = RadynversionAdapter(model=pretrained_radynversion(), **model_params["1.1.1"])
+    lines = {
+        "Halpha": np.linspace(0, 1, 31),
+        "CaII8542": np.linspace(2, 0.5, 31)[None, :],
+    }
+    trans_lines = ad.transform_lines(
+        lines=lines,
+        delta_lambdas={
+            "Halpha": np.linspace(-1.4, 1.4, 31),
+            "CaII8542": np.linspace(-1.0, 1.0, 31),
+        },
+    )
+
+    tt.assert_allclose(torch.linspace(0, 0.5, 31)[None, :], trans_lines["Halpha"])
+    tt.assert_allclose(torch.linspace(1, 0.25, 31)[None, :], trans_lines["CaII8542"])
+
+
+def test_forward_model():
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
+    )
+
+    vel = torch.from_numpy((np.random.randn(50) * 20)[None, :])
+    temp = torch.from_numpy(np.logspace(4, 7, 50)[None, :])
+    ne = torch.from_numpy(np.logspace(17, 5, 50)[None, :])
+
+    atmos = ad.transform_atmosphere(vel=vel, temperature=temp, ne=ne)
+    result = ad.forward_model(atmos)
+
+
+def test_forward_model_data():
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
+    )
+
+    with open("tests/MiniBalancedTraining.pickle", "rb") as pkl:
+        data = pickle.load(pkl)
+
+    vel = torch.stack(data["vel"][:5]) / 1e5
+    temp = torch.stack(data["temperature"][:5])
+    ne = torch.stack(data["ne"][:5])
+
+    atmos = ad.transform_atmosphere(vel=vel, temperature=temp, ne=ne)
+    result = ad.forward_model(atmos)
+
+
+def test_invert_data():
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
+    )
+
+    with open("tests/MiniBalancedTraining.pickle", "rb") as pkl:
+        data = pickle.load(pkl)
+
+    line_data = {
+        "Halpha": data["line"][0][0],
+        "CaII8542": data["line"][1][0],
+    }
+    delta_lambda = {
+        "Halpha": data["wavelength"][0] - torch.mean(data["wavelength"][0]),
+        "CaII8542": data["wavelength"][1] - torch.mean(data["wavelength"][1]),
+    }
+    lines = ad.transform_lines(line_data, delta_lambda)
+    result = ad.invert(lines, batch_size=50)

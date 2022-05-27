@@ -5,17 +5,11 @@ import torch
 from weno4 import weno4
 
 
-class RadynversionAdapter:
-    """Simple base adapter class to facilitate use of Radynversion"""
+class NetworkAdapter:
+    """Simple base adapter class to facilitate use of networks: preprocessing etc."""
 
-    def __init__(
-        self, model, atmos_params, line_profiles, line_half_width, z_stratification
-    ):
+    def __init__(self, model):
         self.model = model
-        self.atmos_params = atmos_params
-        self.line_profiles = line_profiles
-        self.line_half_width = line_half_width
-        self.z_stratification = z_stratification
 
     def transform_atmosphere(self, /, **kwargs):
         raise NotImplementedError
@@ -30,13 +24,15 @@ class RadynversionAdapter:
         pass
 
 
-class ClassicRadynversionAdapter(RadynversionAdapter):
+class RadynversionAdapter(NetworkAdapter):
     def __init__(
         self, model, atmos_params, line_profiles, line_half_width, z_stratification
     ):
-        super().__init__(
-            model, atmos_params, line_profiles, line_half_width, z_stratification
-        )
+        super().__init__(model)
+        self.atmos_params = atmos_params
+        self.line_profiles = line_profiles
+        self.line_half_width = line_half_width
+        self.z_stratification = z_stratification
 
     @staticmethod
     def to_tensor(x):
@@ -149,7 +145,8 @@ class ClassicRadynversionAdapter(RadynversionAdapter):
 
         # NOTE(cmo): Interpolate lines to grids
         interp_lines = {
-            line: torch.zeros(array.shape) for line, array in lines_in.items()
+            line: torch.zeros(array.shape[0], self.model.line_profile_size)
+            for line, array in lines_in.items()
         }
         for line in interp_lines:
             result = interp_lines[line].numpy()
@@ -161,3 +158,56 @@ class ClassicRadynversionAdapter(RadynversionAdapter):
 
     def transform_lines(self, lines, delta_lambdas):
         interp_lines = self.interpolate_lines(lines, delta_lambdas)
+        maxs = {
+            line: torch.max(array, axis=1)[0] for line, array in interp_lines.items()
+        }
+        max_per_obs = torch.zeros(interp_lines[self.line_profiles[0]].shape[0])
+        for _, max_val in maxs.items():
+            max_per_obs = torch.maximum(max_val, max_per_obs)
+        transformed_lines = {
+            line: array / max_per_obs[:, None] for line, array in interp_lines.items()
+        }
+        return transformed_lines
+
+    def forward_model(self, atmos):
+        with torch.no_grad():
+            out = self.model.forward(atmos)[0]
+
+        result = {}
+        result["LatentSpace"] = out[:, : self.model.latent_size]
+
+        line_size = self.model.line_profile_size
+        Nlines = len(self.line_profiles)
+        for idx, line in enumerate(self.line_profiles):
+            start = -(Nlines - idx) * line_size
+            end = start + line_size
+            if end == 0:
+                end = None
+            result[line] = out[:, start:end]
+
+        return result
+
+    def invert(self, lines, latent_space=None, batch_size=None):
+        if batch_size is None:
+            batch_size = lines[self.line_profiles[0]].shape[0]
+
+        if latent_space is None:
+            latent_space = torch.randn(batch_size, self.model.latent_size)
+
+        input = torch.zeros(batch_size, self.model.size)
+        input[:, : self.model.latent_size] = latent_space
+        line_size = self.model.line_profile_size
+        Nlines = len(self.line_profiles)
+        for idx, line in enumerate(self.line_profiles):
+            start = -(Nlines - idx) * line_size
+            end = start + line_size
+            if end == 0:
+                end = None
+            input[:, start:end] = lines[line]
+
+        with torch.no_grad():
+            result = self.model(input, rev=True)[0]
+        return result
+
+
+# TODO(cmo): Handle device and batch size.
