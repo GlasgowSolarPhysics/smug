@@ -5,34 +5,24 @@ import torch
 from weno4 import weno4
 
 
-class NetworkAdapter:
-    """Simple base adapter class to facilitate use of networks: preprocessing etc."""
-
-    def __init__(self, model):
-        self.model = model
-
-    def transform_atmosphere(self, /, **kwargs):
-        raise NotImplementedError
-
-    def inv_transform_atmosphere(self):
-        raise NotImplementedError
-
-    def forward_model(*args):
-        pass
-
-    def invert(*args):
-        pass
-
-
-class RadynversionAdapter(NetworkAdapter):
+class RadynversionAdapter:
     def __init__(
-        self, model, atmos_params, line_profiles, line_half_width, z_stratification
+        self,
+        model,
+        atmos_params,
+        line_profiles,
+        line_half_width,
+        z_stratification,
+        dev=None,
     ):
-        super().__init__(model)
+        self.model = model
         self.atmos_params = atmos_params
         self.line_profiles = line_profiles
         self.line_half_width = line_half_width
         self.z_stratification = z_stratification
+        self.dev = dev
+        if dev is None:
+            self.dev = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     @staticmethod
     def to_tensor(x):
@@ -169,9 +159,10 @@ class RadynversionAdapter(NetworkAdapter):
         }
         return transformed_lines
 
-    def forward_model(self, atmos):
+    def forward_model(self, atmos, cpu=True):
+        inp = atmos.to(self.dev)
         with torch.no_grad():
-            out = self.model.forward(atmos)[0]
+            out = self.model(inp)[0]
 
         result = {}
         result["LatentSpace"] = out[:, : self.model.latent_size]
@@ -184,10 +175,12 @@ class RadynversionAdapter(NetworkAdapter):
             if end == 0:
                 end = None
             result[line] = out[:, start:end]
+        if cpu:
+            result = {k: v.cpu() for k, v in result.items()}
 
         return result
 
-    def invert(self, lines, latent_space=None, batch_size=None):
+    def invert_lines(self, lines, latent_space=None, batch_size=None, cpu=True):
         if batch_size is None:
             batch_size = lines[self.line_profiles[0]].shape[0]
 
@@ -205,9 +198,10 @@ class RadynversionAdapter(NetworkAdapter):
                 end = None
             input[:, start:end] = lines[line]
 
+        input = input.to(self.dev)
         with torch.no_grad():
             result = self.model(input, rev=True)[0]
+        if cpu:
+            result = result.cpu()
+
         return result
-
-
-# TODO(cmo): Handle device and batch size.

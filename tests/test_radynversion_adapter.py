@@ -196,7 +196,7 @@ def test_forward_model_data():
     result = ad.forward_model(atmos)
 
 
-def test_invert_data():
+def test_invert_lines_data():
     ad = RadynversionAdapter(
         model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
     )
@@ -213,4 +213,4 @@ def test_invert_data():
         "CaII8542": data["wavelength"][1] - torch.mean(data["wavelength"][1]),
     }
     lines = ad.transform_lines(line_data, delta_lambda)
-    result = ad.invert(lines, batch_size=50)
+    result = ad.invert_lines(lines, batch_size=50)
