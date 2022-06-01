@@ -3,6 +3,7 @@ import astropy.units as u
 import numpy as np
 import torch
 from weno4 import weno4
+from crispy import CRISPSequence
 
 
 class RadynversionAdapter:
@@ -205,3 +206,43 @@ class RadynversionAdapter:
             result = result.cpu()
 
         return result
+
+    def invert_cubes(
+        self, crisp_seq: CRISPSequence, batch_size=256, latent_draws=100, seed=None
+    ):
+        if not isinstance(crisp_seq, CRISPSequence):
+            raise ValueError(
+                "`crisp_seq` expected to be a `crsipy.CRISPSequence` of the data in order of `RadynversionAdapter.line_profiles`."
+            )
+
+        if len(self.line_profiles) != 2:
+            raise ValueError(
+                "This function is designed for a two-line Radynversion, due to the image-coalignment method in crispy"
+            )
+
+        line_a, line_b, rot_dict = crisp_seq.rotate_crop(sep=True)
+        rot_dict["frame_dims"] = rot_dict["frameDims"]
+        rot_dict["x_min"] = rot_dict["xMin"]
+        rot_dict["x_max"] = rot_dict["xMax"]
+        rot_dict["y_min"] = rot_dict["yMin"]
+        rot_dict["y_max"] = rot_dict["yMax"]
+
+        delta_lambdas = {
+            line: crisp_seq.wvls[i] - np.median(crisp_seq.wvls[i])
+            for i, line in enumerate(self.line_profiles)
+        }
+
+        lines = {
+            self.line_profiles[0]: np.ascontiguousarray(
+                line_a.reshape(line_a.shape[0], -1).T
+            ),
+            self.line_profiles[1]: np.ascontiguousarray(
+                line_b.reshape(line_b.shape[0], -1).T
+            ),
+        }
+        transformed_lines = self.transform_lines(lines, delta_lambdas)
+
+        # NOTE(cmo): Batch these up with latent samples, and invert
+        # TODO(cmo): Set seed here if requested #reproducibility
+
+        # NOTE(cmo): Need to recover wcs and pop into crispy.Inversion
