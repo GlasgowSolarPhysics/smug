@@ -42,6 +42,7 @@ class RadynversionAdapter:
         The device to run the model on. Default will use the first CUDA device
         (if available), or CPU.
     """
+
     def __init__(
         self,
         model,
@@ -354,10 +355,14 @@ class RadynversionAdapter:
         """
         if batch_size is None:
             batch_size = lines[self.line_profiles[0]].shape[0]
-        elif (lines[self.line_profiles[0]].ndim == 2
-              and batch_size != lines[self.line_profiles[0]].shape[0]
-              and lines[self.line_profiles[0]].shape[0] != 1):
-            raise ValueError("`batch_size` should match the number of observations, if more than one is passed")
+        elif (
+            lines[self.line_profiles[0]].ndim == 2
+            and batch_size != lines[self.line_profiles[0]].shape[0]
+            and lines[self.line_profiles[0]].shape[0] != 1
+        ):
+            raise ValueError(
+                "`batch_size` should match the number of observations, if more than one is passed"
+            )
 
         if seed is not None:
             torch.manual_seed(seed)
@@ -388,7 +393,7 @@ class RadynversionAdapter:
         rotate=False,
         crispy_line_mapping=None,
         progress=True,
-        inverse_trans_ignore=None
+        inverse_trans_ignore=None,
     ):
         """Invert observations of spectral lines as loaded by the sst-crispy package.
 
@@ -446,7 +451,7 @@ class RadynversionAdapter:
             line_b = line_b.astype(np.float32)
 
         if inverse_trans_ignore is None:
-            inverse_trans_ignore = ['ne', 'temperature']
+            inverse_trans_ignore = ["ne", "temperature"]
 
         delta_lambdas = {
             line: (crisp_seq.wvls[i] - np.median(crisp_seq.wvls[i])).value
@@ -507,14 +512,19 @@ class RadynversionAdapter:
                 for l_idx, line in enumerate(self.line_profiles):
                     line_slice = self.line_slice(l_idx)
                     for pix_idx, px in enumerate(range(pixel_start, pixel_end)):
-                        yz[pix_idx * latent_draws:(pix_idx + 1) * latent_draws, line_slice] = transformed_lines[line][px]
+                        yz[
+                            pix_idx * latent_draws : (pix_idx + 1) * latent_draws,
+                            line_slice,
+                        ] = transformed_lines[line][px]
 
                 x_out = self.model(yz.to(self.dev), rev=True)[0]
                 x_out[:, self.model.atmos_size * self.model.num_atmos_params :] = 0.0
                 y_round_trip = self.model(x_out)[0]
                 y_round_trip = y_round_trip.cpu().numpy()
 
-                atmos_out = self.inv_transform_atmosphere(x_out, ignore=inverse_trans_ignore)
+                atmos_out = self.inv_transform_atmosphere(
+                    x_out, ignore=inverse_trans_ignore
+                )
                 atmos_out = {
                     k: v.reshape(-1, latent_draws, self.model.atmos_size).cpu().numpy()
                     for k, v in atmos_out.items()
@@ -547,18 +557,25 @@ class RadynversionAdapter:
         obj_dict = ObjDict()
         for p_idx, param in enumerate(self.atmos_params):
             obj_dict[param] = results[param].reshape(self.model.atmos_size, *im_shape)
-            obj_dict[f"{param}_err"] = results["mad"][:, :, p_idx].reshape(self.model.atmos_size, *im_shape)
+            obj_dict[f"{param}_err"] = results["mad"][:, :, p_idx].reshape(
+                self.model.atmos_size, *im_shape
+            )
 
         if crispy_line_mapping is None:
             crispy_line_mapping = {"Halpha": "Halpha", "CaII8542": "Ca8542"}
 
         for l_idx, line in enumerate(self.line_profiles):
             crispy_line = crispy_line_mapping[line]
-            obj_dict[f"{crispy_line}_true"] = transformed_lines[line].T.reshape(self.model.line_profile_size, *im_shape).numpy()
-            obj_dict[f"{crispy_line}"] = results[line].reshape(self.model.line_profile_size, *im_shape)
+            obj_dict[f"{crispy_line}_true"] = (
+                transformed_lines[line]
+                .T.reshape(self.model.line_profile_size, *im_shape)
+                .numpy()
+            )
+            obj_dict[f"{crispy_line}"] = results[line].reshape(
+                self.model.line_profile_size, *im_shape
+            )
             obj_dict[f"{crispy_line}_err"] = results["spect_mad"][:, :, l_idx].reshape(
-                self.model.line_profile_size,
-                *im_shape
+                self.model.line_profile_size, *im_shape
             )
 
         inversion = Inversion(
