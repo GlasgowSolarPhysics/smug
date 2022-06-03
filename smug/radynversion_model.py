@@ -113,7 +113,7 @@ pretrained_kwargs = {
         "num_lines": 2,
         "line_profile_size": 30,
         "atmos_size": 50,
-        "num_atmos_params": 3.0,
+        "num_atmos_params": 3,
         "latent_size": 150,
     },
     "1.1.1": {
@@ -121,7 +121,7 @@ pretrained_kwargs = {
         "num_lines": 2,
         "line_profile_size": 31,
         "atmos_size": 50,
-        "num_atmos_params": 3.0,
+        "num_atmos_params": 3,
         "latent_size": 150,
     },
 }

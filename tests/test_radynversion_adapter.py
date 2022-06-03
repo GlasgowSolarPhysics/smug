@@ -1,14 +1,14 @@
+import pickle
+from os import path
+
 import astropy.units as u
-from matplotlib import pyplot as plt
 import numpy as np
 import numpy.testing as npt
-import pickle
 import pytest
 import torch
 import torch.testing as tt
 from smug.radynversion_adapter import RadynversionAdapter
 from smug.radynversion_model import model_params, pretrained_radynversion
-from weno4 import weno4
 
 
 def test_transform_vel():
@@ -214,3 +214,27 @@ def test_invert_lines_data():
     }
     lines = ad.transform_lines(line_data, delta_lambda)
     result = ad.invert_lines(lines, batch_size=50)
+
+
+# TODO(cmo): Look into making small data or the way sunpy & co download test
+# data. For now we just skip the test if the fits aren't there.
+def test_invert_dual_cubes():
+    files = [
+        "tests/crisp_l2_20140906_152724_6563_r00447.fits",
+        "tests/crisp_l2_20140906_152724_8542_r00447.fits",
+    ]
+    if not all(path.isfile(f) for f in files):
+        pytest.skip("No CRISP data to test with.")
+
+    from crispy import CRISPSequence
+    from crispy.utils import CRISP_sequence_constructor
+
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.1.1"), **model_params["1.1.1"]
+    )
+
+    ims = CRISPSequence(CRISP_sequence_constructor(files))
+    inv = ad.invert_dual_cubes(ims[:, 300:310, 400:402], progress=False)
+
+    for k, v in inv.f.items():
+        assert np.all(np.isfinite(v)), f"{k} not finite"
