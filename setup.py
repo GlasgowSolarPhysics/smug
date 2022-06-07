@@ -8,6 +8,9 @@ setup(
     install_requires=[
         "numpy>=1.21",
         "torch>=1.4",
+        "weno4",
+        "astropy",
         "FrEIA @ git+https://github.com/VLL-HD/FrEIA.git",
+        "sst-crispy @ git+https://github.com/Goobley/crispy.git",
     ],
 )
