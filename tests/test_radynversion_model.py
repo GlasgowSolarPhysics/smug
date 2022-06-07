@@ -16,7 +16,7 @@ def test_model_creation():
 @pytest.mark.parametrize("version", ["1.0.1", "1.1.1"])
 def test_valid_model_input(version):
     model = pretrained_radynversion(version)
-    inp = torch.ones(1, model.size) + 2.0
+    inp = torch.ones(1, model.size) * 0.8
 
     out = model(inp)[0]
     assert out.shape == inp.shape
