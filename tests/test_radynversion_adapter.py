@@ -216,16 +216,12 @@ def test_invert_lines_data():
     result = ad.invert_lines(lines, batch_size=50)
 
 
-# TODO(cmo): Look into making small data or the way sunpy & co download test
-# data. For now we just skip the test if the fits aren't there.
-def test_invert_dual_cubes():
+@pytest.mark.parametrize("slice_size", [2, 5])
+def test_invert_dual_cubes(slice_size):
     files = [
-        "tests/crisp_l2_20140906_152724_6563_r00447.fits",
-        "tests/crisp_l2_20140906_152724_8542_r00447.fits",
+        "tests/mini_crisp_l2_20140906_152724_6563_r00459.fits",
+        "tests/mini_crisp_l2_20140906_152724_8542_r00459.fits",
     ]
-    if not all(path.isfile(f) for f in files):
-        pytest.skip("No CRISP data to test with.")
-
     from crispy import CRISPSequence
     from crispy.utils import CRISP_sequence_constructor
 
@@ -234,7 +230,7 @@ def test_invert_dual_cubes():
     )
 
     ims = CRISPSequence(CRISP_sequence_constructor(files))
-    inv = ad.invert_dual_cubes(ims[:, 300:310, 400:402], progress=False)
+    inv = ad.invert_dual_cubes(ims[:, :1, :slice_size], progress=False)
 
     for k, v in inv.f.items():
         assert np.all(np.isfinite(v)), f"{k} not finite"

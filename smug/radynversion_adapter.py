@@ -490,18 +490,20 @@ class RadynversionAdapter:
         else:
             batch_iter = range(num_batches)
         for i in batch_iter:
-            start = i * batch_size
-            end = (i + 1) * batch_size
+            curr_batch_size = batch_size
+            start = i * curr_batch_size
+
+            if i == num_batches - 1:
+                curr_batch_size = (line_a.shape[0] * latent_draws) - start
+            end = start + curr_batch_size
 
             pixel_start = start // latent_draws
             pixel_end = end // latent_draws
             if pixel_end == pixel_start:
                 pixel_end = pixel_start + 1
 
-            curr_batch_size = batch_size
             if i == num_batches - 1:
                 end = None
-                curr_batch_size = (line_a.shape[0] * latent_draws) - start
 
             with torch.no_grad():
                 yz = torch.zeros((curr_batch_size, self.model.size))
