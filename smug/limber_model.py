@@ -7,6 +7,7 @@ class LimberNet(nn.Module):
 
     def __init__(self, in_size):
         super().__init__()
+        self.size = in_size
 
         self.lin_input = nn.Sequential(
             nn.Linear(in_size, 256),
@@ -112,7 +113,18 @@ pretrained_kwargs = {
     "Halpha": {
         "in_size": 102,
     },
-    "CaII8542": {"in_size": 102},
+    "CaII8542": {
+        "in_size": 102,
+    },
+}
+
+model_params = {
+    "Halpha": {
+        "half_width": 1.4,
+    },
+    "CaII8542": {
+        "half_width": 1.0,
+    },
 }
 
 model_urls = {
