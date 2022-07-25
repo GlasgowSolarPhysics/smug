@@ -26,19 +26,21 @@ class LimberAdapter:
         mu_observed,
         interp=None,
         batch_size=1024,
-        reconstruct_original_wavelengths=False,
+        reconstruct_original_shape=False,
         cpu=True,
     ):
         if interp is None:
             interp = weno4
 
-        if reconstruct_original_wavelengths and not cpu:
+        if reconstruct_original_shape and not cpu:
             raise ValueError(
                 "Cannot interpolate back to original wavelengths "
-                "(`reconstruct_original_wavelengths`) without returning tensors to cpu"
+                "(`reconstruct_original_shape`) without returning tensors to cpu"
             )
 
-        flat_im = np.ascontiguousarray(image.reshape(image.shape[0], -1).T)
+        flat_im = np.ascontiguousarray(image.reshape(image.shape[0], -1).T).astype(
+            "<f4"
+        )
         flat_im_upsample = np.zeros(
             (flat_im.shape[0], self.model.size), dtype=np.float32
         )
@@ -65,9 +67,9 @@ class LimberAdapter:
         if cpu:
             im_out = im_out.cpu()
 
-        if reconstruct_original_wavelengths:
+        if reconstruct_original_shape:
             im_out = im_out.numpy()
-            im_out_downsampled = np.empty_like(im_out)
+            im_out_downsampled = np.empty((im_out.shape[0], image.shape[0]))
             for i in range(im_out.shape[0]):
                 im_out_downsampled[i, :] = weno4(
                     wavelength, self.line_grid, im_out[i, 1:]
