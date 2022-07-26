@@ -5,6 +5,18 @@ from weno4 import weno4
 
 
 class LimberAdapter:
+    """Prepare some data and run a Limber model on it.
+
+    Parameters
+    ----------
+    model : LimberModel
+        The model to use (see `limber_model.pretrained_limber`
+    line_grid : array-like
+        The wavelength grid used in the model.
+    dev : torch.device on which to run the model, optional
+        The device to use (default: gpu if available, otherwise cpu).
+    """
+
     def __init__(self, model, line_grid, dev=None):
 
         self.model = model
@@ -29,6 +41,40 @@ class LimberAdapter:
         reconstruct_original_shape=False,
         cpu=True,
     ):
+        """
+        Use the limber model to reproject data from the provided viewing angle back to mu=1.
+
+        Parameters
+        ----------
+        image : array-like
+            The image to rotate, expected axes [wavelength, y, x].
+        wavelength : array-like or astropy.Quantity
+            The wavelength axis for the image. Will be converted to Angstrom if
+            astropy.Quantity, otherwise assumed to be in Angstrom.
+        mu_observed : float
+            The cosine of the viewing angle of the observation.
+        interp : Callable[[array-like, array-like, array-like], array-like], optional
+            The interpolation function to use for up/downsampling the line
+            profiles. Takes the same signature as `np.interp` (default: weno4).
+        batch_size : int, optional
+            The batch size to use (default: 1024).
+        reconstruct_original_shape : bool, optional
+            Whether to return data in the original shape [original_wavelengths,
+            y, x]. or the internal shape used for the network [y, x,
+            interpolated_wavelengths] (default: False).
+        cpu : bool, optional
+            Whether to return the data to the CPU (default: True), can be useful
+            to keep the data on GPU (as a torch.Tensor) if it's to be used at
+            later stages of a pipeline. `reconstruct_original_shape` can only be
+            set if `cpu` is True. If true, result is returned as a np.array.
+
+        Returns
+        -------
+        data : array
+            Three-dimensional array of the reconstructed data, the axis order of
+            which depends on the result of `reconstruct_original_shape` and
+            `cpu`. If `cpu` is False, a `torch.Tensor` will be returned.
+        """
         if interp is None:
             interp = weno4
 
@@ -76,4 +122,4 @@ class LimberAdapter:
                 )
             return im_out_downsampled.T.reshape(image.shape)
 
-        return im_out.reshape(*image.shape[1:], -1)
+        return im_out.reshape(*image.shape[1:], -1).numpy()
