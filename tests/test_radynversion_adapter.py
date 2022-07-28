@@ -180,6 +180,19 @@ def test_forward_model():
     result = ad.forward_model(atmos)
 
 
+def test_forward_model_missing_param():
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
+    )
+
+    vel = torch.from_numpy((np.random.randn(50) * 20)[None, :])
+    temp = torch.from_numpy(np.logspace(4, 7, 50)[None, :])
+    ne = torch.from_numpy(np.logspace(17, 5, 50)[None, :])
+
+    with pytest.raises(ValueError):
+        atmos = ad.transform_atmosphere(vel=vel, temperature=temp)
+
+
 def test_forward_model_data():
     ad = RadynversionAdapter(
         model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
@@ -196,7 +209,8 @@ def test_forward_model_data():
     result = ad.forward_model(atmos)
 
 
-def test_invert_lines_data():
+@pytest.mark.parametrize("batch_size", [None, 50])
+def test_invert_lines_data(batch_size):
     ad = RadynversionAdapter(
         model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
     )
@@ -213,10 +227,38 @@ def test_invert_lines_data():
         "CaII8542": data["wavelength"][1] - torch.mean(data["wavelength"][1]),
     }
     lines = ad.transform_lines(line_data, delta_lambda)
-    result = ad.invert_lines(lines, batch_size=50)
+    result = ad.invert_lines(lines, batch_size=batch_size)
 
 
-@pytest.mark.parametrize("slice_size", [2, 5])
+@pytest.mark.parametrize("batch_size", [None, 50])
+def test_invert_lines_data_multiple(batch_size):
+    ad = RadynversionAdapter(
+        model=pretrained_radynversion(version="1.0.1"), **model_params["1.0.1"]
+    )
+
+    with open("tests/MiniBalancedTraining.pickle", "rb") as pkl:
+        data = pickle.load(pkl)
+
+    line_data = {
+        "Halpha": torch.stack(data["line"][0][:10]),
+        "CaII8542": torch.stack(data["line"][1][:10]),
+    }
+    delta_lambda = {
+        "Halpha": data["wavelength"][0] - torch.mean(data["wavelength"][0]),
+        "CaII8542": data["wavelength"][1] - torch.mean(data["wavelength"][1]),
+    }
+    lines = ad.transform_lines(line_data, delta_lambda)
+    if batch_size is not None:
+        with pytest.raises(ValueError):
+            # NOTE(cmo): Test error on batch size (10) not matching number of
+            # independent observations passed (50).
+            result = ad.invert_lines(lines, batch_size=batch_size)
+    else:
+        result = ad.invert_lines(lines, batch_size=batch_size)
+
+
+@pytest.mark.parametrize("slice_size", [1, 2, 5])
+@pytest.mark.filterwarnings("ignore")
 def test_invert_dual_cubes(slice_size):
     files = [
         "tests/mini_crisp_l2_20140906_152724_6563_r00459.fits",

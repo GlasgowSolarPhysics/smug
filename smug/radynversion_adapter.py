@@ -1,4 +1,5 @@
 from copy import copy
+from typing import Optional
 
 import astropy.units as u
 import numpy as np
@@ -8,10 +9,11 @@ from crispy import CRISPSequence, Inversion, ObjDict
 from tqdm import tqdm
 from weno4 import weno4
 
+from .radynversion_model import RadynversionModel
+
 
 class RadynversionAdapter:
-    """
-    Run a RADYNVERSION model: prepare the data, run the model, and extract the
+    """Run a RADYNVERSION model: prepare the data, run the model, and extract the
     output.
 
     The parameters for standard uses of this class are present in the
@@ -45,12 +47,12 @@ class RadynversionAdapter:
 
     def __init__(
         self,
-        model,
+        model: RadynversionModel,
         atmos_params,
         line_profiles,
         line_half_width,
         z_stratification,
-        dev=None,
+        dev: Optional[torch.device] = None,
     ):
         self.model = model
         self.atmos_params = atmos_params
@@ -340,7 +342,7 @@ class RadynversionAdapter:
         latent_space : array-like, optional
             Fixed values to use for the latent space. Default: Draw new random samples.
         batch_size : int, optional
-            The number of samples to draw if only one line profiles was
+            The number of samples to draw if only one pixel of line profiles was
             provided. Default: infer from shape of lines.
         cpu : bool, optional
             Whether to return the final data to the cpu. Default: True
@@ -438,7 +440,7 @@ class RadynversionAdapter:
                 "This function is designed for a two-line Radynversion, due to the image-coalignment method in crispy"
             )
 
-        if batch_size / latent_draws != batch_size / latent_draws:
+        if batch_size / latent_draws != batch_size // latent_draws:
             raise ValueError(
                 "`batch_size` should be an integer multiple of `latent_draws`"
             )
