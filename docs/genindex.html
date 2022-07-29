@@ -42,6 +42,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">smug Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limber-api.html">Limber API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="radynversion-api.html">Radynversion API Documentation</a></li>
 </ul>
 
@@ -99,9 +100,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="radynversion-api.html#smug.radynversion_model.F_fully_connected_leaky">F_fully_connected_leaky (class in smug.radynversion_model)</a>
 </li>
-      <li><a href="radynversion-api.html#smug.radynversion_model.F_fully_connected_leaky.forward">forward() (smug.radynversion_model.F_fully_connected_leaky method)</a>
+      <li><a href="limber-api.html#smug.limber_model.LimberNet.forward">forward() (smug.limber_model.LimberNet method)</a>
 
       <ul>
+        <li><a href="radynversion-api.html#smug.radynversion_model.F_fully_connected_leaky.forward">(smug.radynversion_model.F_fully_connected_leaky method)</a>
+</li>
         <li><a href="radynversion-api.html#smug.radynversion_model.RadynversionModel.forward">(smug.radynversion_model.RadynversionModel method)</a>
 </li>
       </ul></li>
@@ -141,10 +144,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="radynversion-api.html#smug.radynversion_model.RadynversionModel.latent_size">latent_size (smug.radynversion_model.RadynversionModel attribute)</a>
 </li>
-      <li><a href="radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.line_grids">line_grids() (smug.radynversion_adapter.RadynversionAdapter method)</a>
+      <li><a href="limber-api.html#smug.limber_adapter.LimberAdapter">LimberAdapter (class in smug.limber_adapter)</a>
+</li>
+      <li><a href="limber-api.html#smug.limber_model.LimberNet">LimberNet (class in smug.limber_model)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.line_grids">line_grids() (smug.radynversion_adapter.RadynversionAdapter method)</a>
+</li>
       <li><a href="radynversion-api.html#smug.radynversion_model.RadynversionModel.line_profile_size">line_profile_size (smug.radynversion_model.RadynversionModel attribute)</a>
 </li>
       <li><a href="radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.line_slice">line_slice() (smug.radynversion_adapter.RadynversionAdapter method)</a>
@@ -161,12 +168,14 @@
 </li>
       <li><a href="radynversion-api.html#smug.radynversion_model.model_urls">model_urls (in module smug.radynversion_model)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
       <ul>
+        <li><a href="limber-api.html#module-smug.limber_adapter">smug.limber_adapter</a>
+</li>
+        <li><a href="limber-api.html#module-smug.limber_model">smug.limber_model</a>
+</li>
         <li><a href="radynversion-api.html#module-smug.radynversion_adapter">smug.radynversion_adapter</a>
 </li>
         <li><a href="radynversion-api.html#module-smug.radynversion_model">smug.radynversion_model</a>
@@ -202,6 +211,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="limber-api.html#smug.limber_model.pretrained_limber">pretrained_limber() (in module smug.limber_model)</a>
+</li>
       <li><a href="radynversion-api.html#smug.radynversion_model.pretrained_radynversion">pretrained_radynversion() (in module smug.radynversion_model)</a>
 </li>
   </ul></td>
@@ -216,6 +227,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="radynversion-api.html#smug.radynversion_model.RadynversionModel">RadynversionModel (class in smug.radynversion_model)</a>
 </li>
+      <li><a href="limber-api.html#smug.limber_adapter.LimberAdapter.reproject_data">reproject_data() (smug.limber_adapter.LimberAdapter method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -223,12 +236,28 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    smug.limber_adapter
+
+      <ul>
+        <li><a href="limber-api.html#module-smug.limber_adapter">module</a>
+</li>
+      </ul></li>
+      <li>
+    smug.limber_model
+
+      <ul>
+        <li><a href="limber-api.html#module-smug.limber_model">module</a>
+</li>
+      </ul></li>
+      <li>
     smug.radynversion_adapter
 
       <ul>
         <li><a href="radynversion-api.html#module-smug.radynversion_adapter">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     smug.radynversion_model
 
@@ -236,8 +265,6 @@
         <li><a href="radynversion-api.html#module-smug.radynversion_model">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.strip_units_ne">strip_units_ne() (smug.radynversion_adapter.RadynversionAdapter static method)</a>
 </li>
       <li><a href="radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.strip_units_temperature">strip_units_temperature() (smug.radynversion_adapter.RadynversionAdapter static method)</a>

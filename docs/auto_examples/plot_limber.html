@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Radynversion API Documentation" href="../radynversion-api.html" />
+    <link rel="next" title="Limber API Documentation" href="../limber-api.html" />
     <link rel="prev" title="Simple Radynversion Example" href="plot_radynversion_adapter.html" /> 
 </head>
 
@@ -49,6 +49,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Simple Limber Example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../limber-api.html">Limber API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../radynversion-api.html">Radynversion API Documentation</a></li>
 </ul>
 
@@ -105,65 +106,59 @@ This data is loaded using <cite>astropy.fits</cite>, but crispy could be used to
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/osborne/Limber_CaII8542_1.0.0.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Limber_CaII8542_1.0.0.pth.tar
 
   0%|          | 0.00/77.7M [00:00&lt;?, ?B/s]
-  0%|          | 32.0k/77.7M [00:00&lt;06:21, 214kB/s]
-  0%|          | 64.0k/77.7M [00:00&lt;06:21, 214kB/s]
-  0%|          | 112k/77.7M [00:00&lt;05:10, 262kB/s]
-  0%|          | 160k/77.7M [00:00&lt;04:45, 285kB/s]
-  0%|          | 224k/77.7M [00:00&lt;04:01, 336kB/s]
-  0%|          | 304k/77.7M [00:00&lt;03:21, 403kB/s]
-  1%|          | 416k/77.7M [00:01&lt;02:37, 516kB/s]
-  1%|          | 560k/77.7M [00:01&lt;02:03, 655kB/s]
-  1%|          | 752k/77.7M [00:01&lt;01:34, 851kB/s]
-  1%|1         | 960k/77.7M [00:01&lt;01:19, 1.02MB/s]
-  2%|1         | 1.19M/77.7M [00:01&lt;01:05, 1.23MB/s]
-  2%|1         | 1.48M/77.7M [00:01&lt;00:54, 1.47MB/s]
-  2%|2         | 1.84M/77.7M [00:01&lt;00:45, 1.76MB/s]
-  3%|2         | 2.27M/77.7M [00:02&lt;00:37, 2.10MB/s]
-  4%|3         | 2.84M/77.7M [00:02&lt;00:29, 2.66MB/s]
-  5%|4         | 3.58M/77.7M [00:02&lt;00:23, 3.37MB/s]
-  6%|6         | 4.73M/77.7M [00:02&lt;00:16, 4.73MB/s]
-  8%|8         | 6.41M/77.7M [00:02&lt;00:11, 6.75MB/s]
- 10%|#         | 8.16M/77.7M [00:02&lt;00:08, 8.29MB/s]
- 13%|#2        | 9.92M/77.7M [00:03&lt;00:07, 9.39MB/s]
- 15%|#4        | 11.7M/77.7M [00:03&lt;00:06, 10.1MB/s]
- 17%|#7        | 13.4M/77.7M [00:03&lt;00:06, 10.7MB/s]
- 19%|#9        | 15.1M/77.7M [00:03&lt;00:05, 11.0MB/s]
- 22%|##1       | 16.8M/77.7M [00:03&lt;00:05, 11.2MB/s]
- 24%|##3       | 18.6M/77.7M [00:03&lt;00:05, 11.4MB/s]
- 26%|##6       | 20.3M/77.7M [00:03&lt;00:05, 11.5MB/s]
- 28%|##8       | 22.0M/77.7M [00:04&lt;00:05, 11.6MB/s]
- 31%|###       | 23.8M/77.7M [00:04&lt;00:04, 11.7MB/s]
- 33%|###2      | 25.5M/77.7M [00:04&lt;00:04, 11.8MB/s]
- 35%|###5      | 27.3M/77.7M [00:04&lt;00:04, 11.9MB/s]
- 37%|###7      | 29.0M/77.7M [00:04&lt;00:04, 11.9MB/s]
- 40%|###9      | 30.8M/77.7M [00:04&lt;00:04, 11.9MB/s]
- 42%|####1     | 32.6M/77.7M [00:05&lt;00:03, 11.9MB/s]
- 44%|####4     | 34.3M/77.7M [00:05&lt;00:03, 11.9MB/s]
- 46%|####6     | 36.1M/77.7M [00:05&lt;00:03, 11.9MB/s]
- 49%|####8     | 37.8M/77.7M [00:05&lt;00:03, 12.0MB/s]
- 51%|#####     | 39.6M/77.7M [00:05&lt;00:03, 12.0MB/s]
- 53%|#####3    | 41.3M/77.7M [00:05&lt;00:03, 12.0MB/s]
- 55%|#####5    | 43.1M/77.7M [00:05&lt;00:03, 12.0MB/s]
- 58%|#####7    | 44.8M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 60%|#####9    | 46.5M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 62%|######2   | 48.3M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 64%|######4   | 50.0M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 67%|######6   | 51.8M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 69%|######8   | 53.5M/77.7M [00:06&lt;00:02, 11.9MB/s]
- 71%|#######1  | 55.2M/77.7M [00:07&lt;00:01, 11.9MB/s]
- 73%|#######3  | 57.0M/77.7M [00:07&lt;00:01, 11.9MB/s]
- 76%|#######5  | 58.8M/77.7M [00:07&lt;00:01, 11.9MB/s]
- 78%|#######7  | 60.5M/77.7M [00:07&lt;00:01, 11.9MB/s]
- 80%|########  | 62.2M/77.7M [00:07&lt;00:01, 12.0MB/s]
- 82%|########2 | 64.0M/77.7M [00:07&lt;00:01, 12.0MB/s]
- 85%|########4 | 65.7M/77.7M [00:07&lt;00:01, 11.9MB/s]
- 87%|########6 | 67.5M/77.7M [00:08&lt;00:00, 11.9MB/s]
- 89%|########9 | 69.2M/77.7M [00:08&lt;00:00, 12.0MB/s]
- 91%|#########1| 71.0M/77.7M [00:08&lt;00:00, 12.0MB/s]
- 94%|#########3| 72.8M/77.7M [00:08&lt;00:00, 12.0MB/s]
- 96%|#########5| 74.5M/77.7M [00:08&lt;00:00, 11.9MB/s]
- 98%|#########8| 76.2M/77.7M [00:08&lt;00:00, 11.9MB/s]
-100%|##########| 77.7M/77.7M [00:08&lt;00:00, 9.13MB/s]
+  0%|          | 32.0k/77.7M [00:00&lt;05:36, 242kB/s]
+  0%|          | 80.0k/77.7M [00:00&lt;04:20, 313kB/s]
+  0%|          | 128k/77.7M [00:00&lt;04:02, 335kB/s]
+  0%|          | 208k/77.7M [00:00&lt;03:04, 441kB/s]
+  0%|          | 336k/77.7M [00:00&lt;02:09, 629kB/s]
+  1%|          | 592k/77.7M [00:00&lt;01:15, 1.07MB/s]
+  1%|1         | 1.00M/77.7M [00:00&lt;00:45, 1.78MB/s]
+  2%|2         | 1.70M/77.7M [00:01&lt;00:27, 2.94MB/s]
+  4%|3         | 2.84M/77.7M [00:01&lt;00:16, 4.77MB/s]
+  6%|5         | 4.53M/77.7M [00:01&lt;00:10, 7.31MB/s]
+  8%|8         | 6.28M/77.7M [00:01&lt;00:08, 9.20MB/s]
+ 10%|#         | 8.00M/77.7M [00:01&lt;00:07, 10.4MB/s]
+ 13%|#2        | 9.73M/77.7M [00:01&lt;00:06, 11.3MB/s]
+ 15%|#4        | 11.5M/77.7M [00:01&lt;00:05, 11.8MB/s]
+ 17%|#6        | 13.2M/77.7M [00:02&lt;00:05, 12.2MB/s]
+ 19%|#9        | 14.9M/77.7M [00:02&lt;00:05, 12.5MB/s]
+ 21%|##1       | 16.6M/77.7M [00:02&lt;00:05, 12.7MB/s]
+ 24%|##3       | 18.3M/77.7M [00:02&lt;00:04, 12.9MB/s]
+ 26%|##5       | 20.1M/77.7M [00:02&lt;00:04, 13.0MB/s]
+ 28%|##8       | 21.8M/77.7M [00:02&lt;00:04, 13.1MB/s]
+ 30%|###       | 23.5M/77.7M [00:02&lt;00:04, 12.6MB/s]
+ 32%|###2      | 25.3M/77.7M [00:03&lt;00:04, 12.9MB/s]
+ 35%|###4      | 27.0M/77.7M [00:03&lt;00:04, 12.2MB/s]
+ 37%|###6      | 28.7M/77.7M [00:03&lt;00:04, 12.6MB/s]
+ 39%|###9      | 30.4M/77.7M [00:03&lt;00:03, 12.8MB/s]
+ 41%|####1     | 32.2M/77.7M [00:03&lt;00:03, 12.9MB/s]
+ 44%|####3     | 33.9M/77.7M [00:03&lt;00:03, 13.0MB/s]
+ 46%|####5     | 35.6M/77.7M [00:03&lt;00:03, 13.1MB/s]
+ 48%|####8     | 37.3M/77.7M [00:03&lt;00:03, 13.1MB/s]
+ 50%|#####     | 39.1M/77.7M [00:04&lt;00:03, 13.2MB/s]
+ 52%|#####2    | 40.8M/77.7M [00:04&lt;00:02, 13.2MB/s]
+ 55%|#####4    | 42.5M/77.7M [00:04&lt;00:02, 13.3MB/s]
+ 57%|#####6    | 44.3M/77.7M [00:04&lt;00:02, 13.3MB/s]
+ 59%|#####9    | 46.0M/77.7M [00:04&lt;00:02, 13.3MB/s]
+ 61%|######1   | 47.7M/77.7M [00:04&lt;00:02, 13.3MB/s]
+ 64%|######3   | 49.5M/77.7M [00:04&lt;00:02, 13.3MB/s]
+ 66%|######5   | 51.2M/77.7M [00:05&lt;00:02, 13.3MB/s]
+ 68%|######8   | 52.9M/77.7M [00:05&lt;00:01, 13.3MB/s]
+ 70%|#######   | 54.6M/77.7M [00:05&lt;00:01, 13.3MB/s]
+ 72%|#######2  | 56.4M/77.7M [00:05&lt;00:01, 13.3MB/s]
+ 75%|#######4  | 58.1M/77.7M [00:05&lt;00:01, 13.3MB/s]
+ 77%|#######6  | 59.8M/77.7M [00:05&lt;00:01, 13.2MB/s]
+ 79%|#######9  | 61.5M/77.7M [00:05&lt;00:01, 13.2MB/s]
+ 81%|########1 | 63.2M/77.7M [00:06&lt;00:01, 13.1MB/s]
+ 84%|########3 | 65.0M/77.7M [00:06&lt;00:01, 13.3MB/s]
+ 86%|########5 | 66.7M/77.7M [00:06&lt;00:00, 13.3MB/s]
+ 88%|########8 | 68.5M/77.7M [00:06&lt;00:00, 13.3MB/s]
+ 90%|######### | 70.2M/77.7M [00:06&lt;00:00, 13.3MB/s]
+ 93%|#########2| 71.9M/77.7M [00:06&lt;00:00, 13.3MB/s]
+ 95%|#########4| 73.7M/77.7M [00:06&lt;00:00, 13.3MB/s]
+ 97%|#########6| 75.4M/77.7M [00:07&lt;00:00, 13.3MB/s]
+ 99%|#########9| 77.1M/77.7M [00:07&lt;00:00, 13.3MB/s]
+100%|##########| 77.7M/77.7M [00:07&lt;00:00, 11.4MB/s]
 </pre></div>
 </div>
 <p>Compute wavelength grid used in Limber model from provided data, and construct Adapter.</p>
@@ -193,12 +188,16 @@ This data is loaded using <cite>astropy.fits</cite>, but crispy could be used to
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="mi">8</span>
 <span class="n">a</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;&lt;f4&quot;</span><span class="p">)</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">out</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_wavelength</span><span class="p">,</span> <span class="n">a</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_wavelength</span><span class="p">,</span> <span class="n">a</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\mu=0.565$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\mu=1.0$ (predicted)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\Delta\lambda$ [$\AA$]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Intensity [DN]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Limber applied to Ca ɪɪ 8542 $\AA$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_limber_001.png" srcset="../_images/sphx_glr_plot_limber_001.png" alt="plot limber" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.943 seconds)</p>
+<img src="../_images/sphx_glr_plot_limber_001.png" srcset="../_images/sphx_glr_plot_limber_001.png" alt="Limber applied to Ca ɪɪ 8542 $\AA$" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.332 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-limber-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/d82ddfccab2c3f81756404e4e949f8b9/plot_limber.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_limber.py</span></code></a></p>
@@ -215,7 +214,7 @@ This data is loaded using <cite>astropy.fits</cite>, but crispy could be used to
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="plot_radynversion_adapter.html" class="btn btn-neutral float-left" title="Simple Radynversion Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../radynversion-api.html" class="btn btn-neutral float-right" title="Radynversion API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../limber-api.html" class="btn btn-neutral float-right" title="Limber API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

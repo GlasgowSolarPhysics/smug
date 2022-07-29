@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Limber API Documentation &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Radynversion API Documentation" href="radynversion-api.html" />
+    <link rel="prev" title="Simple Limber Example" href="auto_examples/plot_limber.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">smug Examples Gallery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Limber API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.limber_adapter">smug.limber_adapter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.limber_model">smug.limber_model module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="radynversion-api.html">Radynversion API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Limber API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/limber-api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="limber-api-documentation">
+<h1>Limber API Documentation<a class="headerlink" href="#limber-api-documentation" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-smug.limber_adapter">
+<span id="smug-limber-adapter-module"></span><h2>smug.limber_adapter module<a class="headerlink" href="#module-smug.limber_adapter" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.limber_adapter.LimberAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.limber_adapter.</span></span><span class="sig-name descname"><span class="pre">LimberAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/limber_adapter.html#LimberAdapter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.limber_adapter.LimberAdapter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Prepare some data and run a Limber model on it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>LimberModel</em>) – The model to use (see <cite>limber_model.pretrained_limber</cite></p></li>
+<li><p><strong>line_grid</strong> (<em>array-like</em>) – The wavelength grid used in the model.</p></li>
+<li><p><strong>dev</strong> (<em>torch.device on which to run the model</em><em>, </em><em>optional</em>) – The device to use (default: gpu if available, otherwise cpu).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.limber_adapter.LimberAdapter.reproject_data">
+<span class="sig-name descname"><span class="pre">reproject_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu_observed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruct_original_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/limber_adapter.html#LimberAdapter.reproject_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.limber_adapter.LimberAdapter.reproject_data" title="Permalink to this definition"></a></dt>
+<dd><p>Use the limber model to reproject data from the provided viewing angle back to mu=1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>array-like</em>) – The image to rotate, expected axes [wavelength, y, x].</p></li>
+<li><p><strong>wavelength</strong> (<em>array-like</em><em> or </em><em>astropy.Quantity</em>) – The wavelength axis for the image. Will be converted to Angstrom if
+astropy.Quantity, otherwise assumed to be in Angstrom.</p></li>
+<li><p><strong>mu_observed</strong> (<em>float</em>) – The cosine of the viewing angle of the observation.</p></li>
+<li><p><strong>interp</strong> (<em>Callable</em><em>[</em><em>[</em><em>array-like</em><em>, </em><em>array-like</em><em>, </em><em>array-like</em><em>]</em><em>, </em><em>array-like</em><em>]</em><em>, </em><em>optional</em>) – The interpolation function to use for up/downsampling the line
+profiles. Takes the same signature as <cite>np.interp</cite> (default: weno4).</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The batch size to use (default: 1024).</p></li>
+<li><p><strong>reconstruct_original_shape</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return data in the original shape [original_wavelengths,
+y, x]. or the internal shape used for the network [y, x,
+interpolated_wavelengths] (default: False).</p></li>
+<li><p><strong>cpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the data to the CPU (default: True), can be useful
+to keep the data on GPU (as a torch.Tensor) if it’s to be used at
+later stages of a pipeline. <cite>reconstruct_original_shape</cite> can only be
+set if <cite>cpu</cite> is True. If true, result is returned as a np.array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> – Three-dimensional array of the reconstructed data, the axis order of
+which depends on the result of <cite>reconstruct_original_shape</cite> and
+<cite>cpu</cite>. If <cite>cpu</cite> is False, a <cite>torch.Tensor</cite> will be returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-smug.limber_model">
+<span id="smug-limber-model-module"></span><h2>smug.limber_model module<a class="headerlink" href="#module-smug.limber_model" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.limber_model.LimberNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.limber_model.</span></span><span class="sig-name descname"><span class="pre">LimberNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/limber_model.html#LimberNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.limber_model.LimberNet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>The class describing the Limber neural network.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.limber_model.LimberNet.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/limber_model.html#LimberNet.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.limber_model.LimberNet.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smug.limber_model.pretrained_limber">
+<span class="sig-prename descclassname"><span class="pre">smug.limber_model.</span></span><span class="sig-name descname"><span class="pre">pretrained_limber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/limber_model.html#pretrained_limber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.limber_model.pretrained_limber" title="Permalink to this definition"></a></dt>
+<dd><p>Load a pretrained Limber model. The weights will be cached as described by <cite>torch.hub</cite>. See their documentation for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>str</em>) – The spectral line variant of the model to load. (e.g. “Halpha” or “CaII8542”)</p></li>
+<li><p><strong>map_location</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Where to remap arrays during the loading process, by default this is set
+to “CPU” to allow loading on any platform.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="auto_examples/plot_limber.html" class="btn btn-neutral float-left" title="Simple Limber Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="radynversion-api.html" class="btn btn-neutral float-right" title="Radynversion API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

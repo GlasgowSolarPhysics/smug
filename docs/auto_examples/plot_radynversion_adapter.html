@@ -49,6 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_limber.html">Simple Limber Example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../limber-api.html">Limber API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../radynversion-api.html">Radynversion API Documentation</a></li>
 </ul>
 
@@ -125,47 +126,42 @@ correctly transform the parameters.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Radynversion_1.1.1.pth.tar
 
   0%|          | 0.00/45.2M [00:00&lt;?, ?B/s]
-  0%|          | 32.0k/45.2M [00:00&lt;03:40, 215kB/s]
-  0%|          | 56.0k/45.2M [00:00&lt;04:20, 182kB/s]
-  0%|          | 80.0k/45.2M [00:00&lt;04:32, 173kB/s]
-  0%|          | 128k/45.2M [00:00&lt;03:25, 230kB/s]
-  0%|          | 176k/45.2M [00:00&lt;02:58, 264kB/s]
-  1%|          | 240k/45.2M [00:00&lt;02:27, 320kB/s]
-  1%|          | 336k/45.2M [00:01&lt;01:50, 425kB/s]
-  1%|1         | 480k/45.2M [00:01&lt;01:18, 595kB/s]
-  1%|1         | 672k/45.2M [00:01&lt;00:57, 809kB/s]
-  2%|2         | 928k/45.2M [00:01&lt;00:42, 1.09MB/s]
-  3%|2         | 1.20M/45.2M [00:01&lt;00:33, 1.37MB/s]
-  3%|3         | 1.56M/45.2M [00:01&lt;00:26, 1.70MB/s]
-  4%|4         | 1.94M/45.2M [00:01&lt;00:23, 1.96MB/s]
-  5%|5         | 2.39M/45.2M [00:02&lt;00:19, 2.30MB/s]
-  7%|6         | 3.00M/45.2M [00:02&lt;00:15, 2.86MB/s]
-  8%|8         | 3.77M/45.2M [00:02&lt;00:12, 3.58MB/s]
- 11%|#         | 4.78M/45.2M [00:02&lt;00:09, 4.59MB/s]
- 13%|#3        | 6.06M/45.2M [00:02&lt;00:07, 5.84MB/s]
- 17%|#7        | 7.77M/45.2M [00:02&lt;00:05, 7.58MB/s]
- 21%|##1       | 9.52M/45.2M [00:03&lt;00:04, 8.90MB/s]
- 25%|##4       | 11.3M/45.2M [00:03&lt;00:03, 9.85MB/s]
- 29%|##8       | 13.0M/45.2M [00:03&lt;00:03, 10.5MB/s]
- 33%|###2      | 14.8M/45.2M [00:03&lt;00:02, 10.9MB/s]
- 36%|###6      | 16.5M/45.2M [00:03&lt;00:02, 11.1MB/s]
- 40%|####      | 18.2M/45.2M [00:03&lt;00:02, 11.4MB/s]
- 44%|####4     | 20.0M/45.2M [00:03&lt;00:02, 11.5MB/s]
- 48%|####8     | 21.7M/45.2M [00:04&lt;00:02, 11.6MB/s]
- 52%|#####1    | 23.5M/45.2M [00:04&lt;00:01, 11.7MB/s]
- 56%|#####5    | 25.2M/45.2M [00:04&lt;00:01, 11.8MB/s]
- 60%|#####9    | 27.0M/45.2M [00:04&lt;00:01, 11.9MB/s]
- 63%|######3   | 28.7M/45.2M [00:04&lt;00:01, 11.9MB/s]
- 67%|######7   | 30.5M/45.2M [00:04&lt;00:01, 11.9MB/s]
- 71%|#######1  | 32.2M/45.2M [00:05&lt;00:01, 11.9MB/s]
- 75%|#######4  | 33.9M/45.2M [00:05&lt;00:01, 11.8MB/s]
- 79%|#######8  | 35.7M/45.2M [00:05&lt;00:00, 11.9MB/s]
- 83%|########2 | 37.4M/45.2M [00:05&lt;00:00, 11.8MB/s]
- 87%|########6 | 39.1M/45.2M [00:05&lt;00:00, 11.9MB/s]
- 90%|######### | 40.9M/45.2M [00:05&lt;00:00, 12.0MB/s]
- 94%|#########4| 42.6M/45.2M [00:05&lt;00:00, 11.9MB/s]
- 98%|#########8| 44.4M/45.2M [00:06&lt;00:00, 11.9MB/s]
-100%|##########| 45.2M/45.2M [00:06&lt;00:00, 7.71MB/s]
+  0%|          | 32.0k/45.2M [00:00&lt;03:09, 250kB/s]
+  0%|          | 64.0k/45.2M [00:00&lt;03:10, 249kB/s]
+  0%|          | 112k/45.2M [00:00&lt;02:34, 306kB/s]
+  0%|          | 176k/45.2M [00:00&lt;02:03, 381kB/s]
+  1%|          | 256k/45.2M [00:00&lt;01:40, 467kB/s]
+  1%|          | 384k/45.2M [00:00&lt;01:12, 647kB/s]
+  1%|1         | 608k/45.2M [00:00&lt;00:46, 1.00MB/s]
+  2%|2         | 0.98M/45.2M [00:01&lt;00:27, 1.67MB/s]
+  3%|3         | 1.56M/45.2M [00:01&lt;00:17, 2.59MB/s]
+  5%|5         | 2.42M/45.2M [00:01&lt;00:11, 3.89MB/s]
+  8%|8         | 3.83M/45.2M [00:01&lt;00:07, 6.12MB/s]
+ 12%|#2        | 5.52M/45.2M [00:01&lt;00:04, 8.33MB/s]
+ 16%|#5        | 7.23M/45.2M [00:01&lt;00:04, 9.95MB/s]
+ 20%|#9        | 8.97M/45.2M [00:01&lt;00:03, 11.1MB/s]
+ 24%|##3       | 10.7M/45.2M [00:01&lt;00:03, 11.9MB/s]
+ 27%|##7       | 12.4M/45.2M [00:02&lt;00:02, 12.4MB/s]
+ 31%|###1      | 14.1M/45.2M [00:02&lt;00:02, 12.8MB/s]
+ 35%|###5      | 15.8M/45.2M [00:02&lt;00:02, 13.0MB/s]
+ 39%|###8      | 17.6M/45.2M [00:02&lt;00:02, 13.2MB/s]
+ 43%|####2     | 19.3M/45.2M [00:02&lt;00:02, 13.4MB/s]
+ 47%|####6     | 21.1M/45.2M [00:02&lt;00:01, 13.6MB/s]
+ 50%|#####     | 22.8M/45.2M [00:02&lt;00:01, 13.6MB/s]
+ 54%|#####4    | 24.5M/45.2M [00:03&lt;00:01, 13.7MB/s]
+ 58%|#####8    | 26.2M/45.2M [00:03&lt;00:01, 13.7MB/s]
+ 62%|######1   | 28.0M/45.2M [00:03&lt;00:01, 13.7MB/s]
+ 66%|######5   | 29.7M/45.2M [00:03&lt;00:01, 13.7MB/s]
+ 69%|######9   | 31.4M/45.2M [00:03&lt;00:01, 13.6MB/s]
+ 73%|#######3  | 33.1M/45.2M [00:03&lt;00:00, 13.7MB/s]
+ 77%|#######7  | 34.9M/45.2M [00:03&lt;00:00, 13.7MB/s]
+ 81%|########  | 36.6M/45.2M [00:03&lt;00:00, 13.7MB/s]
+ 85%|########4 | 38.3M/45.2M [00:04&lt;00:00, 13.7MB/s]
+ 88%|########8 | 40.0M/45.2M [00:04&lt;00:00, 13.7MB/s]
+ 92%|#########2| 41.7M/45.2M [00:04&lt;00:00, 13.6MB/s]
+ 96%|#########6| 43.4M/45.2M [00:04&lt;00:00, 13.6MB/s]
+100%|#########9| 45.1M/45.2M [00:04&lt;00:00, 13.6MB/s]
+100%|##########| 45.2M/45.2M [00:04&lt;00:00, 10.3MB/s]
 </pre></div>
 </div>
 <p>Run the inversion for a small slice of the data.</p>
@@ -176,9 +172,9 @@ correctly transform the parameters.</p>
   warnings.warn(&#39;target cannot be converted to ICRS, so will &#39;
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]
- 50%|#####     | 1/2 [00:02&lt;00:02,  2.81s/it]
-100%|##########| 2/2 [00:04&lt;00:00,  2.02s/it]
-100%|##########| 2/2 [00:04&lt;00:00,  2.14s/it]
+ 50%|#####     | 1/2 [00:02&lt;00:02,  2.37s/it]
+100%|##########| 2/2 [00:03&lt;00:00,  1.68s/it]
+100%|##########| 2/2 [00:03&lt;00:00,  1.79s/it]
 </pre></div>
 </div>
 <p>Display the inversion results for a pixel</p>
@@ -186,7 +182,7 @@ correctly transform the parameters.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_radynversion_adapter_002.png" srcset="../_images/sphx_glr_plot_radynversion_adapter_002.png" alt="2014-09-06T16:55:57.057, Electron Number Density, Electron Temperature, Bulk Plasma Flow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.896 seconds)</p>
+<img src="../_images/sphx_glr_plot_radynversion_adapter_002.png" srcset="../_images/sphx_glr_plot_radynversion_adapter_002.png" alt="2014-09-06T16:55:57.057, Electron Number Density, Electron Temperature, Bulk Plasma Flow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.079 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-radynversion-adapter-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/8d702b4f8c36272918d6a139e8813e79/plot_radynversion_adapter.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_radynversion_adapter.py</span></code></a></p>

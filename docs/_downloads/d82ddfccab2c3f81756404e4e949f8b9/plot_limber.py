@@ -50,6 +50,10 @@ out = limber_ca.reproject_data(
 idx = 8
 a = im[0].data.astype("<f4")
 b = out
-plt.plot(data_wavelength, a[:, idx, idx])
-plt.plot(grid, b[idx, idx, 1:])
+plt.plot(data_wavelength, a[:, idx, idx], label=r"$\mu=0.565$")
+plt.plot(grid, b[idx, idx, 1:], label=r"$\mu=1.0$ (predicted)")
+plt.xlabel(r"$\Delta\lambda$ [$\AA$]")
+plt.ylabel("Intensity [DN]")
+plt.title("Limber applied to Ca ɪɪ 8542 $\AA$")
+plt.legend()
 plt.show()
