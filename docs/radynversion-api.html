@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radynversion API Documentation &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to smug’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Radynversion API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.radynversion_adapter">smug.radynversion_adapter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.radynversion_model">smug.radynversion_model module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Radynversion API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/radynversion-api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="radynversion-api-documentation">
+<h1>Radynversion API Documentation<a class="headerlink" href="#radynversion-api-documentation" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-smug.radynversion_adapter">
+<span id="smug-radynversion-adapter-module"></span><h2>smug.radynversion_adapter module<a class="headerlink" href="#module-smug.radynversion_adapter" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.radynversion_adapter.</span></span><span class="sig-name descname"><span class="pre">RadynversionAdapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#smug.radynversion_model.RadynversionModel" title="smug.radynversion_model.RadynversionModel"><span class="pre">RadynversionModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmos_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_profiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_half_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_stratification</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">device</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Run a RADYNVERSION model: prepare the data, run the model, and extract the
+output.</p>
+<p>The parameters for standard uses of this class are present in the
+<cite>smug.radynversion_model.model_params</cite> dict.  When passing multiple
+instances of a parameter to any of the methods of this class (unless
+otherwise specified) they are expected to have leading dimension the number
+of instances, and second dimension the size of the parameter.</p>
+<p>Transformation of different parameters is controlled by the
+<cite>transform_{param}</cite> and <cite>inv_transform_{param}</cite> static methods on the class,
+and these are looked up dynamically, i.e. this can be used with updated
+models taking different parameters by subclassing/monkeypatching.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="#smug.radynversion_model.RadynversionModel" title="smug.radynversion_model.RadynversionModel"><em>RadynversionModel</em></a>) – The model to use.</p></li>
+<li><p><strong>atmos_params</strong> (<em>list of str</em>) – The names of the atmospheric parameters in the order expected by the
+model.</p></li>
+<li><p><strong>line_profiles</strong> (<em>list of str</em>) – The names of the spectral lines in the order expected by the model.</p></li>
+<li><p><strong>line_half_width</strong> (<em>list of float</em>) – The half width (in Angstrom) of the lines expected by the model.</p></li>
+<li><p><strong>z_stratification</strong> (<em>array-like</em>) – The z_stratification used in the model.</p></li>
+<li><p><strong>dev</strong> (<cite>torch.device</cite>, optional) – The device to run the model on. Default will use the first CUDA device
+(if available), or CPU.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.forward_model">
+<span class="sig-name descname"><span class="pre">forward_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.forward_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.forward_model" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the line profiles associated with atmospheric samples and return
+in a dict by line name. This result also contains the associated latent
+space under key <cite>LatentSpace</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atmos</strong> (<em>torch.Tensor</em>) – The pre-packed atmosphere tensor (see <cite>transform_atmosphere</cite>).</p></li>
+<li><p><strong>cpu</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the line profile tensors to the cpu. Default: True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The line profiles associated with these atmospheres.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict of str to torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.interpolate_lines">
+<span class="sig-name descname"><span class="pre">interpolate_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_lambdas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.interpolate_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.interpolate_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolate lines from their current grid to the one expected by the
+model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lines</strong> (<em>dict of str to array-like</em>) – The lines to interpolate, with their expected name as key (as
+detailed in self.line_profiles)</p></li>
+<li><p><strong>delta_lambdas</strong> (<em>dict of str to array-like</em>) – The wavelength grids for the lines (in Angstrom), relative to the
+rest wavelength.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The interpolated lines on the grids given by <cite>self.line_grids()</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict of str to torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.inv_transform_atmosphere">
+<span class="sig-name descname"><span class="pre">inv_transform_atmosphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.inv_transform_atmosphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.inv_transform_atmosphere" title="Permalink to this definition"></a></dt>
+<dd><p>Convert and unpack a transformed atmosphere into a dict by parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atmos</strong> (<em>torch.Tensor</em>) – The packed atmosphere to expand</p></li>
+<li><p><strong>ignore</strong> (<em>list of str</em><em>, </em><em>optional</em>) – Parameters to ignore in the inverse transformation step.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The atmospheric parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict of str to torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.inv_transform_ne">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inv_transform_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ne</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.inv_transform_ne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.inv_transform_ne" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse transform ne for output from the network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.inv_transform_temperature">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inv_transform_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.inv_transform_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.inv_transform_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse transform temperature for output from the network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.inv_transform_vel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inv_transform_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.inv_transform_vel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.inv_transform_vel" title="Permalink to this definition"></a></dt>
+<dd><p>Inverse transform velocity for output from the network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.invert_dual_cubes">
+<span class="sig-name descname"><span class="pre">invert_dual_cubes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crisp_seq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CRISPSequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_draws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crispy_line_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse_trans_ignore</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Inversion</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.invert_dual_cubes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.invert_dual_cubes" title="Permalink to this definition"></a></dt>
+<dd><p>Invert observations of spectral lines as loaded by the sst-crispy package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crisp_seq</strong> (<em>CRISPSequence</em>) – Sequence of spectral lines in the order expected by the model (see <cite>self.line_profiles</cite>).</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples to put through the network at once. Default:
+256 (quite conservative). Must be a multiple of <cite>latent_draws</cite>.</p></li>
+<li><p><strong>latent_draws</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of latent draws for the inversion of each pixel. Default: 128.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Manual random seed for PyTorch to control the latent space draws.
+Default: None (do not adjust the random state).</p></li>
+<li><p><strong>rotate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use the <cite>rotate_crop</cite> method of CRISPSequence prior to
+inverting. Default: False.</p></li>
+<li><p><strong>crispy_line_mapping</strong> (<em>dict of str to str</em><em>, </em><em>optional</em>) – Map of strs used for line profile names by the Radynversion model to
+those used by Crispy. Default works with default pretrained
+Radynversion models.</p></li>
+<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to show a progress bar for the inversion. Default: True.</p></li>
+<li><p><strong>inverse_trans_ignore</strong> (<em>list of str</em><em>, </em><em>optional</em>) – Atmospheric parameters to ignore the when inverse transforming the
+inverted atmospheres (passed to <cite>inv_transform_atmosphere</cite>). Default
+(‘ne’, ‘temperature’), works with default pretrained Radynversion models.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><cite>crispy.Inversion</cite> containing the inverted data including errors in the</p></li>
+<li><p><em>form of median absolute deviation.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.invert_lines">
+<span class="sig-name descname"><span class="pre">invert_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.invert_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.invert_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Invert spectral lines. The batch size is inferred from the length of the
+line arrays (i.e. one latent sample per line), or can be used to set the
+number latent draws for a _single_ observation.</p>
+<dl class="simple">
+<dt>lines<span class="classifier">dict of str to torch.Tensor</span></dt><dd><p>The transformed lines (see <cite>transform_lines</cite>).</p>
+</dd>
+<dt>latent_space<span class="classifier">array-like or torch.Tensor, optional</span></dt><dd><p>Fixed values to use for the latent space. Default: Draw new random samples.</p>
+</dd>
+<dt>batch_size<span class="classifier">int, optional</span></dt><dd><p>The number of samples to draw if only one pixel of line profiles was
+provided. Default: infer from shape of lines.</p>
+</dd>
+<dt>cpu<span class="classifier">bool, optional</span></dt><dd><p>Whether to return the final data to the cpu. Default: True</p>
+</dd>
+<dt>seed<span class="classifier">int, optional</span></dt><dd><p>Manual random seed for PyTorch to control the latent space draws.
+Default: None (do not adjust the random state).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Tensor containing the associated packed atmospheres (see</em></p></li>
+<li><p><cite>inv_transform_atmosphere</cite>).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.line_grids">
+<span class="sig-name descname"><span class="pre">line_grids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.line_grids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.line_grids" title="Permalink to this definition"></a></dt>
+<dd><p>The wavelength grid expected for each line, in a dict by line name.
+Wavelengths are in Angstrom relative to rest wavelength.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.line_slice">
+<span class="sig-name descname"><span class="pre">line_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">slice</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.line_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.line_slice" title="Permalink to this definition"></a></dt>
+<dd><p>The slice associated with line of index <cite>idx</cite> in the packed
+[latent_space, lines] vector for the reverse process.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.strip_units_ne">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strip_units_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ne</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.strip_units_ne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.strip_units_ne" title="Permalink to this definition"></a></dt>
+<dd><p>Convert ne to astropy units of cm^{-3} and return the value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.strip_units_temperature">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strip_units_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.strip_units_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.strip_units_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>Convert temperature to astropy units of K and return the value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.strip_units_vel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strip_units_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.strip_units_vel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.strip_units_vel" title="Permalink to this definition"></a></dt>
+<dd><p>Convert velocity to astropy units of km/s and return the value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.to_tensor">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.to_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.to_tensor" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a numpy array to torch Tensor and ensure float32 dtype.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.transform_atmosphere">
+<span class="sig-name descname"><span class="pre">transform_atmosphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.transform_atmosphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.transform_atmosphere" title="Permalink to this definition"></a></dt>
+<dd><p>Construct a tensor of transformed atmospheric parameters for input
+into the network.</p>
+<p>Default units (if not using astropy units): ne: cm^{-3}, temperature: K,
+velocity: km/s</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – key, value mapping of the atmospheric parameters. Optionally using
+astropy units which will be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>atmosphere</strong> – The atmospheric input prepared for the network.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.transform_lines">
+<span class="sig-name descname"><span class="pre">transform_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_lambdas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.transform_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.transform_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolate and transform (normalise) lines ready for use in the
+network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lines</strong> (<em>dict of str to array-like</em>) – The lines to interpolate, with their expected name as key (as
+detailed in self.line_profiles)</p></li>
+<li><p><strong>delta_lambdas</strong> (<em>dict of str to array-like</em>) – The wavelength grids for the lines (in Angstrom), relative to the
+rest wavelength.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed lines on the grids given by <cite>self.line_grids()</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict of str to array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.transform_ne">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform_ne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ne</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.transform_ne"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.transform_ne" title="Permalink to this definition"></a></dt>
+<dd><p>Transform ne for input into the network (log10).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.transform_temperature">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.transform_temperature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.transform_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>Transform temperature for input into the network (log10).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_adapter.RadynversionAdapter.transform_vel">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_adapter.html#RadynversionAdapter.transform_vel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_adapter.RadynversionAdapter.transform_vel" title="Permalink to this definition"></a></dt>
+<dd><p>Transform velocity for input into the network.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-smug.radynversion_model">
+<span id="smug-radynversion-model-module"></span><h2>smug.radynversion_model module<a class="headerlink" href="#module-smug.radynversion_model" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.radynversion_model.F_fully_connected_leaky">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">F_fully_connected_leaky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaky_slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/radynversion_model.html#F_fully_connected_leaky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_model.F_fully_connected_leaky" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Fully connected transformation, not reversible, but used in the RNVP
+blocks in the Radynversion model.
+This is a standard five-layer feed-forward fully connected network, with
+leaky ReLU’s after the first three layers, and a ReLU after the fourth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size_in</strong> (<em>int</em>) – The size of the network input layer.</p></li>
+<li><p><strong>size_out</strong> (<em>int</em>) – The size of the network output layer.</p></li>
+<li><p><strong>internal_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the network’s three hidden layers (Default: <cite>2 * size_out</cite>).</p></li>
+<li><p><strong>dropout</strong> (<em>float</em><em>, </em><em>optional</em>) – The dropout fraction to use during training. (Default: 0.0)</p></li>
+<li><p><strong>batch_norm</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to apply batch normalisation after the fully connected layers
+(Default: False).</p></li>
+<li><p><strong>leaky_slope</strong> (<em>float</em><em>, </em><em>optional</em>) – The slope to use in the leaky ReLU activations (after the first 3 FC
+layers).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_model.F_fully_connected_leaky.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/smug/radynversion_model.html#F_fully_connected_leaky.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_model.F_fully_connected_leaky.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">RadynversionModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_out_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_profile_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmos_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_atmos_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_inv_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/radynversion_model.html#RadynversionModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_model.RadynversionModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>RADYNVERSION Invertible Neural Network.
+Constructs the model object to the requisite dimensions using building
+blocks from the FrEIA package.</p>
+<p>Forward process: atmosphere -&gt; line profiles x latent space
+Backward process: line profiles x latent space -&gt; atmosphere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_out_size</strong> (<em>int</em>) – The size of the input and output layers.</p></li>
+<li><p><strong>num_lines</strong> (<em>int</em>) – The number of spectral lines used in the model (e.g. 2 for the standard
+Radynversion).</p></li>
+<li><p><strong>line_profile_size</strong> (<em>int</em>) – The number of points across each spectral line (assumed the same for
+all).</p></li>
+<li><p><strong>atmos_size</strong> (<em>int</em>) – The number of points in the atmospheric stratification.</p></li>
+<li><p><strong>num_atmos_params</strong> (<em>int</em>) – The number of stratified atmospheric parameters.</p></li>
+<li><p><strong>latent_size</strong> (<em>int</em>) – The size of the latent space associated with associated with information
+lost in the forward process.</p></li>
+<li><p><strong>version</strong> (<em>str</em><em> or </em><em>None</em>) – A version identifier associated with the current model.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.model" title="Permalink to this definition"></a></dt>
+<dd><p>The model describing the INN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>FrEIA.SequenceINN</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.in_out_size">
+<span class="sig-name descname"><span class="pre">in_out_size</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.in_out_size" title="Permalink to this definition"></a></dt>
+<dd><p>The size of the input and output layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.num_lines">
+<span class="sig-name descname"><span class="pre">num_lines</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.num_lines" title="Permalink to this definition"></a></dt>
+<dd><p>The number of spectral lines used in the model (e.g. 2 for the standard
+Radynversion).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.line_profile_size">
+<span class="sig-name descname"><span class="pre">line_profile_size</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.line_profile_size" title="Permalink to this definition"></a></dt>
+<dd><p>The number of points across each spectral line (assumed the same for
+all).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.atmos_size">
+<span class="sig-name descname"><span class="pre">atmos_size</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.atmos_size" title="Permalink to this definition"></a></dt>
+<dd><p>The number of points in the atmospheric stratification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.num_atmos_params">
+<span class="sig-name descname"><span class="pre">num_atmos_params</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.num_atmos_params" title="Permalink to this definition"></a></dt>
+<dd><p>The number of stratified atmospheric parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.latent_size">
+<span class="sig-name descname"><span class="pre">latent_size</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.latent_size" title="Permalink to this definition"></a></dt>
+<dd><p>The size of the latent space associated with associated with information
+lost in the forward process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.version" title="Permalink to this definition"></a></dt>
+<dd><p>A version identifier associated with the current model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.radynversion_model.RadynversionModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/radynversion_model.html#RadynversionModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_model.RadynversionModel.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="smug.radynversion_model.model_params">
+<span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">model_params</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'1.0.1':</span> <span class="pre">{'atmos_params':</span> <span class="pre">['ne',</span> <span class="pre">'temperature',</span> <span class="pre">'vel'],</span> <span class="pre">'line_half_width':</span> <span class="pre">[1.4,</span> <span class="pre">1.0],</span> <span class="pre">'line_profiles':</span> <span class="pre">['Halpha',</span> <span class="pre">'CaII8542'],</span> <span class="pre">'z_stratification':</span> <span class="pre">array([-0.065,</span>&#160; <span class="pre">0.016,</span>&#160; <span class="pre">0.097,</span>&#160; <span class="pre">0.178,</span>&#160; <span class="pre">0.259,</span>&#160; <span class="pre">0.34</span> <span class="pre">,</span>&#160; <span class="pre">0.421,</span>&#160; <span class="pre">0.502,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.583,</span>&#160; <span class="pre">0.664,</span>&#160; <span class="pre">0.745,</span>&#160; <span class="pre">0.826,</span>&#160; <span class="pre">0.907,</span>&#160; <span class="pre">0.988,</span>&#160; <span class="pre">1.069,</span>&#160; <span class="pre">1.15</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.231,</span>&#160; <span class="pre">1.312,</span>&#160; <span class="pre">1.393,</span>&#160; <span class="pre">1.474,</span>&#160; <span class="pre">1.555,</span>&#160; <span class="pre">1.636,</span>&#160; <span class="pre">1.718,</span>&#160; <span class="pre">1.799,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.88</span> <span class="pre">,</span>&#160; <span class="pre">1.961,</span>&#160; <span class="pre">2.042,</span>&#160; <span class="pre">2.123,</span>&#160; <span class="pre">2.204,</span>&#160; <span class="pre">2.285,</span>&#160; <span class="pre">2.366,</span>&#160; <span class="pre">2.447,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.528,</span>&#160; <span class="pre">2.609,</span>&#160; <span class="pre">2.69</span> <span class="pre">,</span>&#160; <span class="pre">2.771,</span>&#160; <span class="pre">2.852,</span>&#160; <span class="pre">2.933,</span>&#160; <span class="pre">3.014,</span>&#160; <span class="pre">3.095,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.176,</span>&#160; <span class="pre">3.257,</span>&#160; <span class="pre">3.338,</span>&#160; <span class="pre">3.419,</span>&#160; <span class="pre">3.5</span>&#160; <span class="pre">,</span>&#160; <span class="pre">4.36</span> <span class="pre">,</span>&#160; <span class="pre">5.431,</span>&#160; <span class="pre">6.766,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">8.429,</span> <span class="pre">10.5</span>&#160; <span class="pre">],</span> <span class="pre">dtype=float32)},</span> <span class="pre">'1.1.1':</span> <span class="pre">{'atmos_params':</span> <span class="pre">['ne',</span> <span class="pre">'temperature',</span> <span class="pre">'vel'],</span> <span class="pre">'line_half_width':</span> <span class="pre">[1.4,</span> <span class="pre">1.0],</span> <span class="pre">'line_profiles':</span> <span class="pre">['Halpha',</span> <span class="pre">'CaII8542'],</span> <span class="pre">'z_stratification':</span> <span class="pre">array([-0.065,</span>&#160; <span class="pre">0.016,</span>&#160; <span class="pre">0.097,</span>&#160; <span class="pre">0.178,</span>&#160; <span class="pre">0.259,</span>&#160; <span class="pre">0.34</span> <span class="pre">,</span>&#160; <span class="pre">0.421,</span>&#160; <span class="pre">0.502,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.583,</span>&#160; <span class="pre">0.664,</span>&#160; <span class="pre">0.745,</span>&#160; <span class="pre">0.826,</span>&#160; <span class="pre">0.907,</span>&#160; <span class="pre">0.988,</span>&#160; <span class="pre">1.069,</span>&#160; <span class="pre">1.15</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.231,</span>&#160; <span class="pre">1.312,</span>&#160; <span class="pre">1.393,</span>&#160; <span class="pre">1.474,</span>&#160; <span class="pre">1.555,</span>&#160; <span class="pre">1.636,</span>&#160; <span class="pre">1.718,</span>&#160; <span class="pre">1.799,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.88</span> <span class="pre">,</span>&#160; <span class="pre">1.961,</span>&#160; <span class="pre">2.042,</span>&#160; <span class="pre">2.123,</span>&#160; <span class="pre">2.204,</span>&#160; <span class="pre">2.285,</span>&#160; <span class="pre">2.366,</span>&#160; <span class="pre">2.447,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.528,</span>&#160; <span class="pre">2.609,</span>&#160; <span class="pre">2.69</span> <span class="pre">,</span>&#160; <span class="pre">2.771,</span>&#160; <span class="pre">2.852,</span>&#160; <span class="pre">2.933,</span>&#160; <span class="pre">3.014,</span>&#160; <span class="pre">3.095,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.176,</span>&#160; <span class="pre">3.257,</span>&#160; <span class="pre">3.338,</span>&#160; <span class="pre">3.419,</span>&#160; <span class="pre">3.5</span>&#160; <span class="pre">,</span>&#160; <span class="pre">4.36</span> <span class="pre">,</span>&#160; <span class="pre">5.431,</span>&#160; <span class="pre">6.766,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">8.429,</span> <span class="pre">10.5</span>&#160; <span class="pre">],</span> <span class="pre">dtype=float32)}}</span></em><a class="headerlink" href="#smug.radynversion_model.model_params" title="Permalink to this definition"></a></dt>
+<dd><p>additional parameters needed by the RadynversionAdapter
+for each pre-trained versioned Radynversion model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict of str to dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="smug.radynversion_model.model_urls">
+<span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">model_urls</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'1.0.1':</span> <span class="pre">'https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.0.1.pth.tar',</span> <span class="pre">'1.1.1':</span> <span class="pre">'https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar'}</span></em><a class="headerlink" href="#smug.radynversion_model.model_urls" title="Permalink to this definition"></a></dt>
+<dd><p>urls to the weights for the pre-trained versioned Radynversion models</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict of str to str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="smug.radynversion_model.original_z">
+<span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">original_z</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([-0.065,</span>&#160; <span class="pre">0.016,</span>&#160; <span class="pre">0.097,</span>&#160; <span class="pre">0.178,</span>&#160; <span class="pre">0.259,</span>&#160; <span class="pre">0.34</span> <span class="pre">,</span>&#160; <span class="pre">0.421,</span>&#160; <span class="pre">0.502,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.583,</span>&#160; <span class="pre">0.664,</span>&#160; <span class="pre">0.745,</span>&#160; <span class="pre">0.826,</span>&#160; <span class="pre">0.907,</span>&#160; <span class="pre">0.988,</span>&#160; <span class="pre">1.069,</span>&#160; <span class="pre">1.15</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.231,</span>&#160; <span class="pre">1.312,</span>&#160; <span class="pre">1.393,</span>&#160; <span class="pre">1.474,</span>&#160; <span class="pre">1.555,</span>&#160; <span class="pre">1.636,</span>&#160; <span class="pre">1.718,</span>&#160; <span class="pre">1.799,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1.88</span> <span class="pre">,</span>&#160; <span class="pre">1.961,</span>&#160; <span class="pre">2.042,</span>&#160; <span class="pre">2.123,</span>&#160; <span class="pre">2.204,</span>&#160; <span class="pre">2.285,</span>&#160; <span class="pre">2.366,</span>&#160; <span class="pre">2.447,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2.528,</span>&#160; <span class="pre">2.609,</span>&#160; <span class="pre">2.69</span> <span class="pre">,</span>&#160; <span class="pre">2.771,</span>&#160; <span class="pre">2.852,</span>&#160; <span class="pre">2.933,</span>&#160; <span class="pre">3.014,</span>&#160; <span class="pre">3.095,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3.176,</span>&#160; <span class="pre">3.257,</span>&#160; <span class="pre">3.338,</span>&#160; <span class="pre">3.419,</span>&#160; <span class="pre">3.5</span>&#160; <span class="pre">,</span>&#160; <span class="pre">4.36</span> <span class="pre">,</span>&#160; <span class="pre">5.431,</span>&#160; <span class="pre">6.766,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">8.429,</span> <span class="pre">10.5</span>&#160; <span class="pre">],</span> <span class="pre">dtype=float32)</span></em><a class="headerlink" href="#smug.radynversion_model.original_z" title="Permalink to this definition"></a></dt>
+<dd><p>altitude grid used in the original Radynversion models</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array of float32</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="smug.radynversion_model.pretrained_kwargs">
+<span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">pretrained_kwargs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'1.0.1':</span> <span class="pre">{'atmos_size':</span> <span class="pre">50,</span> <span class="pre">'in_out_size':</span> <span class="pre">384,</span> <span class="pre">'latent_size':</span> <span class="pre">150,</span> <span class="pre">'line_profile_size':</span> <span class="pre">30,</span> <span class="pre">'num_atmos_params':</span> <span class="pre">3,</span> <span class="pre">'num_lines':</span> <span class="pre">2},</span> <span class="pre">'1.1.1':</span> <span class="pre">{'atmos_size':</span> <span class="pre">50,</span> <span class="pre">'in_out_size':</span> <span class="pre">384,</span> <span class="pre">'latent_size':</span> <span class="pre">150,</span> <span class="pre">'line_profile_size':</span> <span class="pre">31,</span> <span class="pre">'num_atmos_params':</span> <span class="pre">3,</span> <span class="pre">'num_lines':</span> <span class="pre">2}}</span></em><a class="headerlink" href="#smug.radynversion_model.pretrained_kwargs" title="Permalink to this definition"></a></dt>
+<dd><p>kwargs needed to instantiate the standard
+pre-trained versioned Radynversion models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict of str to dict of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smug.radynversion_model.pretrained_radynversion">
+<span class="sig-prename descclassname"><span class="pre">smug.radynversion_model.</span></span><span class="sig-name descname"><span class="pre">pretrained_radynversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1.1.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">device</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#smug.radynversion_model.RadynversionModel" title="smug.radynversion_model.RadynversionModel"><span class="pre">RadynversionModel</span></a></span></span><a class="reference internal" href="_modules/smug/radynversion_model.html#pretrained_radynversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.radynversion_model.pretrained_radynversion" title="Permalink to this definition"></a></dt>
+<dd><p>Load a pretrained RADYNVERSION model. The weights will be be cached as
+described by <cite>torch.hub</cite>. See their documentation for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – The version number of the model to load. Default: 1.1.1</p></li>
+<li><p><strong>map_location</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Where to remap arrays during the loading process, by default this is set
+to “CPU” to allow loading on any platform.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to smug’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

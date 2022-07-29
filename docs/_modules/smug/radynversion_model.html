@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>smug.radynversion_model &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../radynversion-api.html">Radynversion API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>smug.radynversion_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for smug.radynversion_model</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">FrEIA.framework</span> <span class="k">as</span> <span class="nn">Ff</span>
+<span class="kn">import</span> <span class="nn">FrEIA.modules</span> <span class="k">as</span> <span class="nn">Fm</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+
+
+<div class="viewcode-block" id="F_fully_connected_leaky"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_model.F_fully_connected_leaky">[docs]</a><span class="k">class</span> <span class="nc">F_fully_connected_leaky</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fully connected transformation, not reversible, but used in the RNVP</span>
+<span class="sd">    blocks in the Radynversion model.</span>
+<span class="sd">    This is a standard five-layer feed-forward fully connected network, with</span>
+<span class="sd">    leaky ReLU&#39;s after the first three layers, and a ReLU after the fourth.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size_in : int</span>
+<span class="sd">        The size of the network input layer.</span>
+<span class="sd">    size_out : int</span>
+<span class="sd">        The size of the network output layer.</span>
+<span class="sd">    internal_size : int, optional</span>
+<span class="sd">        The size of the network&#39;s three hidden layers (Default: `2 * size_out`).</span>
+<span class="sd">    dropout : float, optional</span>
+<span class="sd">        The dropout fraction to use during training. (Default: 0.0)</span>
+<span class="sd">    batch_norm : bool, optional</span>
+<span class="sd">        Whether to apply batch normalisation after the fully connected layers</span>
+<span class="sd">        (Default: False).</span>
+<span class="sd">    leaky_slope : float, optional</span>
+<span class="sd">        The slope to use in the leaky ReLU activations (after the first 3 FC</span>
+<span class="sd">        layers).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">size_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">size_out</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">internal_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">batch_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">leaky_slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">internal_size</span><span class="p">:</span>
+            <span class="n">internal_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">size_out</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d2b</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">size_in</span><span class="p">,</span> <span class="n">internal_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">internal_size</span><span class="p">,</span> <span class="n">internal_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2b</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">internal_size</span><span class="p">,</span> <span class="n">internal_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">internal_size</span><span class="p">,</span> <span class="n">internal_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">internal_size</span><span class="p">,</span> <span class="n">size_out</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nl1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="n">leaky_slope</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nl2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="n">leaky_slope</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nl2b</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">negative_slope</span><span class="o">=</span><span class="n">leaky_slope</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nl2d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">batch_norm</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">internal_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">internal_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn2b</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">internal_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn2b</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm</span> <span class="o">=</span> <span class="n">batch_norm</span>
+
+<div class="viewcode-block" id="F_fully_connected_leaky.forward"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_model.F_fully_connected_leaky.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nl1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d1</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nl2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d2</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2b</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_norm</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2b</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nl2b</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d2b</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2d</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nl2d</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div></div>
+
+
+<div class="viewcode-block" id="RadynversionModel"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_model.RadynversionModel">[docs]</a><span class="k">class</span> <span class="nc">RadynversionModel</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;RADYNVERSION Invertible Neural Network.</span>
+<span class="sd">    Constructs the model object to the requisite dimensions using building</span>
+<span class="sd">    blocks from the FrEIA package.</span>
+
+<span class="sd">    Forward process: atmosphere -&gt; line profiles x latent space</span>
+<span class="sd">    Backward process: line profiles x latent space -&gt; atmosphere.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    in_out_size : int</span>
+<span class="sd">        The size of the input and output layers.</span>
+<span class="sd">    num_lines : int</span>
+<span class="sd">        The number of spectral lines used in the model (e.g. 2 for the standard</span>
+<span class="sd">        Radynversion).</span>
+<span class="sd">    line_profile_size : int</span>
+<span class="sd">        The number of points across each spectral line (assumed the same for</span>
+<span class="sd">        all).</span>
+<span class="sd">    atmos_size : int</span>
+<span class="sd">        The number of points in the atmospheric stratification.</span>
+<span class="sd">    num_atmos_params : int</span>
+<span class="sd">        The number of stratified atmospheric parameters.</span>
+<span class="sd">    latent_size : int</span>
+<span class="sd">        The size of the latent space associated with associated with information</span>
+<span class="sd">        lost in the forward process.</span>
+<span class="sd">    version : str or None</span>
+<span class="sd">        A version identifier associated with the current model.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : FrEIA.SequenceINN</span>
+<span class="sd">        The model describing the INN.</span>
+<span class="sd">    in_out_size : int</span>
+<span class="sd">        The size of the input and output layers.</span>
+<span class="sd">    num_lines : int</span>
+<span class="sd">        The number of spectral lines used in the model (e.g. 2 for the standard</span>
+<span class="sd">        Radynversion).</span>
+<span class="sd">    line_profile_size : int</span>
+<span class="sd">        The number of points across each spectral line (assumed the same for</span>
+<span class="sd">        all).</span>
+<span class="sd">    atmos_size : int</span>
+<span class="sd">        The number of points in the atmospheric stratification.</span>
+<span class="sd">    num_atmos_params : int</span>
+<span class="sd">        The number of stratified atmospheric parameters.</span>
+<span class="sd">    latent_size : int</span>
+<span class="sd">        The size of the latent space associated with associated with information</span>
+<span class="sd">        lost in the forward process.</span>
+<span class="sd">    version : str or None</span>
+<span class="sd">        A version identifier associated with the current model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_out_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_lines</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">line_profile_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">atmos_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_atmos_params</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">latent_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_inv_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">in_out_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_inv_layers</span> <span class="o">=</span> <span class="n">num_inv_layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_lines</span> <span class="o">=</span> <span class="n">num_lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_profile_size</span> <span class="o">=</span> <span class="n">line_profile_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atmos_size</span> <span class="o">=</span> <span class="n">atmos_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_atmos_params</span> <span class="o">=</span> <span class="n">num_atmos_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latent_size</span> <span class="o">=</span> <span class="n">latent_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Ff</span><span class="o">.</span><span class="n">SequenceINN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># Build net graph</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_inv_layers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Fm</span><span class="o">.</span><span class="n">RNVPCouplingBlock</span><span class="p">,</span> <span class="n">subnet_constructor</span><span class="o">=</span><span class="n">F_fully_connected_leaky</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">num_inv_layers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Fm</span><span class="o">.</span><span class="n">PermuteRandom</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RadynversionModel.forward"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_model.RadynversionModel.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="n">pretrained_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;1.0.1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;in_out_size&quot;</span><span class="p">:</span> <span class="mi">384</span><span class="p">,</span>
+        <span class="s2">&quot;num_lines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;line_profile_size&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="s2">&quot;atmos_size&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="s2">&quot;num_atmos_params&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;latent_size&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;1.1.1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;in_out_size&quot;</span><span class="p">:</span> <span class="mi">384</span><span class="p">,</span>
+        <span class="s2">&quot;num_lines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;line_profile_size&quot;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="s2">&quot;atmos_size&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="s2">&quot;num_atmos_params&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;latent_size&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;dict of str to dict of str: kwargs needed to instantiate the standard</span>
+<span class="sd">pre-trained versioned Radynversion models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">original_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="o">-</span><span class="mf">0.065</span><span class="p">,</span>
+        <span class="mf">0.016</span><span class="p">,</span>
+        <span class="mf">0.097</span><span class="p">,</span>
+        <span class="mf">0.178</span><span class="p">,</span>
+        <span class="mf">0.259</span><span class="p">,</span>
+        <span class="mf">0.340</span><span class="p">,</span>
+        <span class="mf">0.421</span><span class="p">,</span>
+        <span class="mf">0.502</span><span class="p">,</span>
+        <span class="mf">0.583</span><span class="p">,</span>
+        <span class="mf">0.664</span><span class="p">,</span>
+        <span class="mf">0.745</span><span class="p">,</span>
+        <span class="mf">0.826</span><span class="p">,</span>
+        <span class="mf">0.907</span><span class="p">,</span>
+        <span class="mf">0.988</span><span class="p">,</span>
+        <span class="mf">1.069</span><span class="p">,</span>
+        <span class="mf">1.150</span><span class="p">,</span>
+        <span class="mf">1.231</span><span class="p">,</span>
+        <span class="mf">1.312</span><span class="p">,</span>
+        <span class="mf">1.393</span><span class="p">,</span>
+        <span class="mf">1.474</span><span class="p">,</span>
+        <span class="mf">1.555</span><span class="p">,</span>
+        <span class="mf">1.636</span><span class="p">,</span>
+        <span class="mf">1.718</span><span class="p">,</span>
+        <span class="mf">1.799</span><span class="p">,</span>
+        <span class="mf">1.880</span><span class="p">,</span>
+        <span class="mf">1.961</span><span class="p">,</span>
+        <span class="mf">2.042</span><span class="p">,</span>
+        <span class="mf">2.123</span><span class="p">,</span>
+        <span class="mf">2.204</span><span class="p">,</span>
+        <span class="mf">2.285</span><span class="p">,</span>
+        <span class="mf">2.366</span><span class="p">,</span>
+        <span class="mf">2.447</span><span class="p">,</span>
+        <span class="mf">2.528</span><span class="p">,</span>
+        <span class="mf">2.609</span><span class="p">,</span>
+        <span class="mf">2.690</span><span class="p">,</span>
+        <span class="mf">2.771</span><span class="p">,</span>
+        <span class="mf">2.852</span><span class="p">,</span>
+        <span class="mf">2.933</span><span class="p">,</span>
+        <span class="mf">3.014</span><span class="p">,</span>
+        <span class="mf">3.095</span><span class="p">,</span>
+        <span class="mf">3.176</span><span class="p">,</span>
+        <span class="mf">3.257</span><span class="p">,</span>
+        <span class="mf">3.338</span><span class="p">,</span>
+        <span class="mf">3.419</span><span class="p">,</span>
+        <span class="mf">3.500</span><span class="p">,</span>
+        <span class="mf">4.360</span><span class="p">,</span>
+        <span class="mf">5.431</span><span class="p">,</span>
+        <span class="mf">6.766</span><span class="p">,</span>
+        <span class="mf">8.429</span><span class="p">,</span>
+        <span class="mf">10.5</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;array of float32: altitude grid used in the original Radynversion models&quot;&quot;&quot;</span>
+
+<span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;1.0.1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;atmos_params&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;vel&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;line_profiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Halpha&quot;</span><span class="p">,</span> <span class="s2">&quot;CaII8542&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;line_half_width&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s2">&quot;z_stratification&quot;</span><span class="p">:</span> <span class="n">original_z</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;1.1.1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;atmos_params&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;vel&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;line_profiles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Halpha&quot;</span><span class="p">,</span> <span class="s2">&quot;CaII8542&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;line_half_width&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="s2">&quot;z_stratification&quot;</span><span class="p">:</span> <span class="n">original_z</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;dict of str to dict: additional parameters needed by the RadynversionAdapter</span>
+<span class="sd">for each pre-trained versioned Radynversion model.&quot;&quot;&quot;</span>
+
+<span class="n">model_urls</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;1.0.1&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.0.1.pth.tar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1.1.1&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;dict of str to str: urls to the weights for the pre-trained versioned Radynversion models&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="pretrained_radynversion"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_model.pretrained_radynversion">[docs]</a><span class="k">def</span> <span class="nf">pretrained_radynversion</span><span class="p">(</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.1.1&quot;</span><span class="p">,</span> <span class="n">map_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RadynversionModel</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load a pretrained RADYNVERSION model. The weights will be be cached as</span>
+<span class="sd">    described by `torch.hub`. See their documentation for details.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    version : str, optional</span>
+<span class="sd">        The version number of the model to load. Default: 1.1.1</span>
+<span class="sd">    map_location : torch.device, optional</span>
+<span class="sd">        Where to remap arrays during the loading process, by default this is set</span>
+<span class="sd">        to &quot;CPU&quot; to allow loading on any platform.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pretrained_kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown version &#39;</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&#39; from pretrained list, expected one of </span><span class="si">{</span><span class="n">pretrained_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">RadynversionModel</span><span class="p">(</span><span class="o">**</span><span class="n">pretrained_kwargs</span><span class="p">[</span><span class="n">version</span><span class="p">],</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">map_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">map_location</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load_state_dict_from_url</span><span class="p">(</span>
+        <span class="n">model_urls</span><span class="p">[</span><span class="n">version</span><span class="p">],</span> <span class="n">map_location</span><span class="o">=</span><span class="n">map_location</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;state_dict&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

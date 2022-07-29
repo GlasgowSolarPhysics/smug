@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>smug.radynversion_adapter &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../radynversion-api.html">Radynversion API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>smug.radynversion_adapter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for smug.radynversion_adapter</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">astropy.stats</span> <span class="kn">import</span> <span class="n">median_absolute_deviation</span> <span class="k">as</span> <span class="n">mad</span>
+<span class="kn">from</span> <span class="nn">crispy</span> <span class="kn">import</span> <span class="n">CRISPSequence</span><span class="p">,</span> <span class="n">Inversion</span><span class="p">,</span> <span class="n">ObjDict</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">weno4</span> <span class="kn">import</span> <span class="n">weno4</span>
+
+<span class="kn">from</span> <span class="nn">.radynversion_model</span> <span class="kn">import</span> <span class="n">RadynversionModel</span>
+
+
+<div class="viewcode-block" id="RadynversionAdapter"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter">[docs]</a><span class="k">class</span> <span class="nc">RadynversionAdapter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Run a RADYNVERSION model: prepare the data, run the model, and extract the</span>
+<span class="sd">    output.</span>
+
+<span class="sd">    The parameters for standard uses of this class are present in the</span>
+<span class="sd">    `smug.radynversion_model.model_params` dict.  When passing multiple</span>
+<span class="sd">    instances of a parameter to any of the methods of this class (unless</span>
+<span class="sd">    otherwise specified) they are expected to have leading dimension the number</span>
+<span class="sd">    of instances, and second dimension the size of the parameter.</span>
+
+<span class="sd">    Transformation of different parameters is controlled by the</span>
+<span class="sd">    `transform_{param}` and `inv_transform_{param}` static methods on the class,</span>
+<span class="sd">    and these are looked up dynamically, i.e. this can be used with updated</span>
+<span class="sd">    models taking different parameters by subclassing/monkeypatching.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : RadynversionModel</span>
+<span class="sd">        The model to use.</span>
+<span class="sd">    atmos_params : list of str</span>
+<span class="sd">        The names of the atmospheric parameters in the order expected by the</span>
+<span class="sd">        model.</span>
+<span class="sd">    line_profiles : list of str</span>
+<span class="sd">        The names of the spectral lines in the order expected by the model.</span>
+<span class="sd">    line_half_width : list of float</span>
+<span class="sd">        The half width (in Angstrom) of the lines expected by the model.</span>
+<span class="sd">    z_stratification : array-like</span>
+<span class="sd">        The z_stratification used in the model.</span>
+<span class="sd">    dev : `torch.device`, optional</span>
+<span class="sd">        The device to run the model on. Default will use the first CUDA device</span>
+<span class="sd">        (if available), or CPU.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">RadynversionModel</span><span class="p">,</span>
+        <span class="n">atmos_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">line_profiles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">line_half_width</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">z_stratification</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">dev</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span> <span class="o">=</span> <span class="n">atmos_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span> <span class="o">=</span> <span class="n">line_profiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_half_width</span> <span class="o">=</span> <span class="n">line_half_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_stratification</span> <span class="o">=</span> <span class="n">z_stratification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dev</span> <span class="o">=</span> <span class="n">dev</span>
+        <span class="k">if</span> <span class="n">dev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dev</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RadynversionAdapter.to_tensor"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.to_tensor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_tensor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert a numpy array to torch Tensor and ensure float32 dtype.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.transform_ne"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.transform_ne">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transform_ne</span><span class="p">(</span><span class="n">ne</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Transform ne for input into the network (log10).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">ne</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.transform_temperature"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.transform_temperature">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transform_temperature</span><span class="p">(</span><span class="n">temp</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Transform temperature for input into the network (log10).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.transform_vel"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.transform_vel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transform_vel</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Transform velocity for input into the network.&quot;&quot;&quot;</span>
+        <span class="n">vel_sign</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">vel_sign</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">vel_sign</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">vel</span> <span class="o">=</span> <span class="n">vel_sign</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vel</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.strip_units_ne"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.strip_units_ne">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">strip_units_ne</span><span class="p">(</span><span class="n">ne</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert ne to astropy units of cm^{-3} and return the value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">ne</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">cm</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.strip_units_temperature"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.strip_units_temperature">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">strip_units_temperature</span><span class="p">(</span><span class="n">vel</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert temperature to astropy units of K and return the value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vel</span> <span class="o">&lt;&lt;</span> <span class="n">u</span><span class="o">.</span><span class="n">K</span><span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.strip_units_vel"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.strip_units_vel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">strip_units_vel</span><span class="p">(</span><span class="n">vel</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert velocity to astropy units of km/s and return the value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vel</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">km</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">))</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.inv_transform_ne"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.inv_transform_ne">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">inv_transform_ne</span><span class="p">(</span><span class="n">ne</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform ne for output from the network.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">ne</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.inv_transform_temperature"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.inv_transform_temperature">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">inv_transform_temperature</span><span class="p">(</span><span class="n">temp</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform temperature for output from the network.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">temp</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.inv_transform_vel"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.inv_transform_vel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">inv_transform_vel</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform velocity for output from the network.&quot;&quot;&quot;</span>
+        <span class="n">v_sign</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">v_sign</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v_sign</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">vel</span> <span class="o">=</span> <span class="n">v_sign</span> <span class="o">*</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vel</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.transform_atmosphere"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.transform_atmosphere">[docs]</a>    <span class="k">def</span> <span class="nf">transform_atmosphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Construct a tensor of transformed atmospheric parameters for input</span>
+<span class="sd">        into the network.</span>
+
+<span class="sd">        Default units (if not using astropy units): ne: cm^{-3}, temperature: K,</span>
+<span class="sd">        velocity: km/s</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            key, value mapping of the atmospheric parameters. Optionally using</span>
+<span class="sd">            astropy units which will be converted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atmosphere: torch.Tensor</span>
+<span class="sd">            The atmospheric input prepared for the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">missing_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">missing_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_params</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameters missing: </span><span class="si">{</span><span class="n">missing_params</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="n">Nspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">batch_size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Got batch_size of </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, expected </span><span class="si">{</span><span class="n">batch_size</span><span class="si">}</span><span class="s2"> for parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Nspace</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Got atmos_size of </span><span class="si">{</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, expected </span><span class="si">{</span><span class="n">Nspace</span><span class="si">}</span><span class="s2"> for parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">tensor_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">param</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;strip_units_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">param</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span>
+        <span class="p">}</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">):</span>
+            <span class="n">trans</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;transform_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">result</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">Nspace</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nspace</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans</span><span class="p">(</span><span class="n">tensor_params</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.inv_transform_atmosphere"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.inv_transform_atmosphere">[docs]</a>    <span class="k">def</span> <span class="nf">inv_transform_atmosphere</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">atmos</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Convert and unpack a transformed atmosphere into a dict by parameter.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atmos : torch.Tensor</span>
+<span class="sd">            The packed atmosphere to expand</span>
+<span class="sd">        ignore : list of str, optional</span>
+<span class="sd">            Parameters to ignore in the inverse transformation step.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict of str to torch.Tensor</span>
+<span class="sd">            The atmospheric parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Nspace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">atmos</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">Nspace</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nspace</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">trans</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;inv_transform_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans</span><span class="p">(</span><span class="n">atmos</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">Nspace</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Nspace</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.line_grids"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.line_grids">[docs]</a>    <span class="k">def</span> <span class="nf">line_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The wavelength grid expected for each line, in a dict by line name.</span>
+<span class="sd">        Wavelengths are in Angstrom relative to rest wavelength.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">line</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">line_half_width</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">line_half_width</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.interpolate_lines"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.interpolate_lines">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_lines</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">delta_lambdas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate lines from their current grid to the one expected by the</span>
+<span class="sd">        model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lines : dict of str to array-like</span>
+<span class="sd">            The lines to interpolate, with their expected name as key (as</span>
+<span class="sd">            detailed in self.line_profiles)</span>
+<span class="sd">        delta_lambdas : dict of str to array-like</span>
+<span class="sd">            The wavelength grids for the lines (in Angstrom), relative to the</span>
+<span class="sd">            rest wavelength.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict of str to torch.Tensor</span>
+<span class="sd">            The interpolated lines on the grids given by `self.line_grids()`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">grids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_grids</span><span class="p">()</span>
+        <span class="n">lines_in</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">lines_in</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">lines_in</span><span class="p">[</span><span class="n">line</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># NOTE(cmo): Interpolate lines to grids</span>
+        <span class="n">interp_lines</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">line</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">lines_in</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">interp_lines</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">interp_lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">weno4</span><span class="p">(</span>
+                    <span class="n">grids</span><span class="p">[</span><span class="n">line</span><span class="p">],</span> <span class="n">delta_lambdas</span><span class="p">[</span><span class="n">line</span><span class="p">],</span> <span class="n">lines_in</span><span class="p">[</span><span class="n">line</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">interp_lines</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.transform_lines"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.transform_lines">[docs]</a>    <span class="k">def</span> <span class="nf">transform_lines</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">delta_lambdas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate and transform (normalise) lines ready for use in the</span>
+<span class="sd">        network.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lines : dict of str to array-like</span>
+<span class="sd">            The lines to interpolate, with their expected name as key (as</span>
+<span class="sd">            detailed in self.line_profiles)</span>
+<span class="sd">        delta_lambdas : dict of str to array-like</span>
+<span class="sd">            The wavelength grids for the lines (in Angstrom), relative to the</span>
+<span class="sd">            rest wavelength.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict of str to array-like</span>
+<span class="sd">            The transformed lines on the grids given by `self.line_grids()`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">interp_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolate_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">delta_lambdas</span><span class="p">)</span>
+        <span class="n">maxs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">line</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">interp_lines</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">max_per_obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">interp_lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">max_val</span> <span class="ow">in</span> <span class="n">maxs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">max_per_obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">max_val</span><span class="p">,</span> <span class="n">max_per_obs</span><span class="p">)</span>
+        <span class="n">transformed_lines</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">line</span><span class="p">:</span> <span class="n">array</span> <span class="o">/</span> <span class="n">max_per_obs</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">interp_lines</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">transformed_lines</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.forward_model"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.forward_model">[docs]</a>    <span class="k">def</span> <span class="nf">forward_model</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">atmos</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the line profiles associated with atmospheric samples and return</span>
+<span class="sd">        in a dict by line name. This result also contains the associated latent</span>
+<span class="sd">        space under key `LatentSpace`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atmos : torch.Tensor</span>
+<span class="sd">            The pre-packed atmosphere tensor (see `transform_atmosphere`).</span>
+<span class="sd">        cpu : bool, optional</span>
+<span class="sd">            Whether to return the line profile tensors to the cpu. Default: True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict of str to torch.Tensor</span>
+<span class="sd">            The line profiles associated with these atmospheres.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inp</span> <span class="o">=</span> <span class="n">atmos</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">inp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;LatentSpace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">latent_size</span><span class="p">]</span>
+
+        <span class="n">line_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span>
+        <span class="n">Nlines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">Nlines</span> <span class="o">-</span> <span class="n">idx</span><span class="p">)</span> <span class="o">*</span> <span class="n">line_size</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">line_size</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">line</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:,</span> <span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cpu</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.line_slice"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.line_slice">[docs]</a>    <span class="k">def</span> <span class="nf">line_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">slice</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The slice associated with line of index `idx` in the packed</span>
+<span class="sd">        [latent_space, lines] vector for the reverse process.&quot;&quot;&quot;</span>
+        <span class="n">num_lines</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span>
+        <span class="n">line_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span>
+        <span class="n">line_start</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">num_lines</span> <span class="o">-</span> <span class="n">idx</span><span class="p">)</span> <span class="o">*</span> <span class="n">line_size</span>
+        <span class="n">line_end</span> <span class="o">=</span> <span class="n">line_start</span> <span class="o">+</span> <span class="n">line_size</span>
+        <span class="k">if</span> <span class="n">line_end</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">line_end</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="n">line_end</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.invert_lines"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.invert_lines">[docs]</a>    <span class="k">def</span> <span class="nf">invert_lines</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">latent_space</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Invert spectral lines. The batch size is inferred from the length of the</span>
+<span class="sd">        line arrays (i.e. one latent sample per line), or can be used to set the</span>
+<span class="sd">        number latent draws for a _single_ observation.</span>
+
+<span class="sd">        lines : dict of str to torch.Tensor</span>
+<span class="sd">            The transformed lines (see `transform_lines`).</span>
+<span class="sd">        latent_space : array-like or torch.Tensor, optional</span>
+<span class="sd">            Fixed values to use for the latent space. Default: Draw new random samples.</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            The number of samples to draw if only one pixel of line profiles was</span>
+<span class="sd">            provided. Default: infer from shape of lines.</span>
+<span class="sd">        cpu : bool, optional</span>
+<span class="sd">            Whether to return the final data to the cpu. Default: True</span>
+<span class="sd">        seed : int, optional</span>
+<span class="sd">            Manual random seed for PyTorch to control the latent space draws.</span>
+<span class="sd">            Default: None (do not adjust the random state).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tensor containing the associated packed atmospheres (see</span>
+<span class="sd">        `inv_transform_atmosphere`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="n">batch_size</span> <span class="o">!=</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`batch_size` should match the number of observations, if more than one is passed&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">latent_space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">latent_space</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">latent_size</span><span class="p">)</span>
+
+        <span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">latent_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">latent_space</span>  <span class="c1"># type: ignore</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">):</span>
+            <span class="n">line_slice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_slice</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="nb">input</span><span class="p">[:,</span> <span class="n">line_slice</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span>
+
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">rev</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cpu</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="RadynversionAdapter.invert_dual_cubes"><a class="viewcode-back" href="../../radynversion-api.html#smug.radynversion_adapter.RadynversionAdapter.invert_dual_cubes">[docs]</a>    <span class="k">def</span> <span class="nf">invert_dual_cubes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">crisp_seq</span><span class="p">:</span> <span class="n">CRISPSequence</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="n">latent_draws</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rotate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">crispy_line_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">inverse_trans_ignore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Inversion</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Invert observations of spectral lines as loaded by the sst-crispy package.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        crisp_seq : CRISPSequence</span>
+<span class="sd">            Sequence of spectral lines in the order expected by the model (see `self.line_profiles`).</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            The number of samples to put through the network at once. Default:</span>
+<span class="sd">            256 (quite conservative). Must be a multiple of `latent_draws`.</span>
+<span class="sd">        latent_draws : int, optional</span>
+<span class="sd">            The number of latent draws for the inversion of each pixel. Default: 128.</span>
+<span class="sd">        seed : int, optional</span>
+<span class="sd">            Manual random seed for PyTorch to control the latent space draws.</span>
+<span class="sd">            Default: None (do not adjust the random state).</span>
+<span class="sd">        rotate : bool, optional</span>
+<span class="sd">            Whether to use the `rotate_crop` method of CRISPSequence prior to</span>
+<span class="sd">            inverting. Default: False.</span>
+<span class="sd">        crispy_line_mapping : dict of str to str, optional</span>
+<span class="sd">            Map of strs used for line profile names by the Radynversion model to</span>
+<span class="sd">            those used by Crispy. Default works with default pretrained</span>
+<span class="sd">            Radynversion models.</span>
+<span class="sd">        progress : bool, optional</span>
+<span class="sd">            Whether to show a progress bar for the inversion. Default: True.</span>
+<span class="sd">        inverse_trans_ignore : list of str, optional</span>
+<span class="sd">            Atmospheric parameters to ignore the when inverse transforming the</span>
+<span class="sd">            inverted atmospheres (passed to `inv_transform_atmosphere`). Default</span>
+<span class="sd">            (&#39;ne&#39;, &#39;temperature&#39;), works with default pretrained Radynversion models.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        `crispy.Inversion` containing the inverted data including errors in the</span>
+<span class="sd">        form of median absolute deviation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crisp_seq</span><span class="p">,</span> <span class="n">CRISPSequence</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`crisp_seq` expected to be a `crsipy.CRISPSequence` of the data in order of `RadynversionAdapter.line_profiles`.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;This function is designed for a two-line Radynversion, due to the image-coalignment method in crispy&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">batch_size</span> <span class="o">/</span> <span class="n">latent_draws</span> <span class="o">!=</span> <span class="n">batch_size</span> <span class="o">//</span> <span class="n">latent_draws</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`batch_size` should be an integer multiple of `latent_draws`&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rotate</span><span class="p">:</span>
+            <span class="n">crisp_seq</span><span class="o">.</span><span class="n">rotate_crop</span><span class="p">()</span>
+        <span class="n">line_a</span><span class="p">,</span> <span class="n">line_b</span> <span class="o">=</span> <span class="n">crisp_seq</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">if</span> <span class="n">line_a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+            <span class="n">line_a</span> <span class="o">=</span> <span class="n">line_a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">line_b</span> <span class="o">=</span> <span class="n">line_b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inverse_trans_ignore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inverse_trans_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ne&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">]</span>
+
+        <span class="n">delta_lambdas</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">line</span><span class="p">:</span> <span class="p">(</span><span class="n">crisp_seq</span><span class="o">.</span><span class="n">wvls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">crisp_seq</span><span class="o">.</span><span class="n">wvls</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">im_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">line_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">line_a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">line_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">line_b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">line_b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">line_a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">line_b</span><span class="p">}</span>
+        <span class="n">transformed_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">delta_lambdas</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">param</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span><span class="p">,</span> <span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span> <span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+            <span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;mad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span><span class="p">,</span> <span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">)),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;spect_mad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span> <span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">num_batches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">latent_draws</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">progress</span><span class="p">:</span>
+            <span class="n">batch_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_batches</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">batch_iter</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_batches</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">batch_iter</span><span class="p">:</span>
+            <span class="n">curr_batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">curr_batch_size</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_batches</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">curr_batch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">line_a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">latent_draws</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">curr_batch_size</span>
+
+            <span class="n">pixel_start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">//</span> <span class="n">latent_draws</span>
+            <span class="n">pixel_end</span> <span class="o">=</span> <span class="n">end</span> <span class="o">//</span> <span class="n">latent_draws</span>
+            <span class="k">if</span> <span class="n">pixel_end</span> <span class="o">==</span> <span class="n">pixel_start</span><span class="p">:</span>
+                <span class="n">pixel_end</span> <span class="o">=</span> <span class="n">pixel_start</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_batches</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">yz</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">curr_batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+                <span class="n">yz</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">latent_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span>
+                    <span class="n">curr_batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">latent_size</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">l_idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">):</span>
+                    <span class="n">line_slice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_slice</span><span class="p">(</span><span class="n">l_idx</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pix_idx</span><span class="p">,</span> <span class="n">px</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pixel_start</span><span class="p">,</span> <span class="n">pixel_end</span><span class="p">)):</span>
+                        <span class="n">yz</span><span class="p">[</span>
+                            <span class="n">pix_idx</span> <span class="o">*</span> <span class="n">latent_draws</span> <span class="p">:</span> <span class="p">(</span><span class="n">pix_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">latent_draws</span><span class="p">,</span>
+                            <span class="n">line_slice</span><span class="p">,</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="n">transformed_lines</span><span class="p">[</span><span class="n">line</span><span class="p">][</span><span class="n">px</span><span class="p">]</span>
+
+                <span class="n">x_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">yz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">),</span> <span class="n">rev</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">x_out</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">num_atmos_params</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">y_round_trip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_out</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">y_round_trip</span> <span class="o">=</span> <span class="n">y_round_trip</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+                <span class="n">atmos_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_transform_atmosphere</span><span class="p">(</span>
+                    <span class="n">x_out</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">inverse_trans_ignore</span>
+                <span class="p">)</span>
+                <span class="n">atmos_out</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">latent_draws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">atmos_out</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">p_idx</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">):</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">param</span><span class="p">][:,</span> <span class="n">pixel_start</span><span class="p">:</span><span class="n">pixel_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">atmos_out</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="n">results</span><span class="p">[</span><span class="s2">&quot;mad&quot;</span><span class="p">][:,</span> <span class="n">pixel_start</span><span class="p">:</span><span class="n">pixel_end</span><span class="p">,</span> <span class="n">p_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span>
+                    <span class="n">mad</span><span class="p">(</span><span class="n">atmos_out</span><span class="p">[</span><span class="n">param</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">)</span>
+
+            <span class="n">lines_out</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">line</span><span class="p">:</span> <span class="n">y_round_trip</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_slice</span><span class="p">(</span><span class="n">l_idx</span><span class="p">)]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">latent_draws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">l_idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">l_idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">):</span>
+                <span class="n">line_val</span> <span class="o">=</span> <span class="n">lines_out</span><span class="p">[</span><span class="n">line</span><span class="p">]</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">][:,</span> <span class="n">pixel_start</span><span class="p">:</span><span class="n">pixel_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">line_val</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">)</span>
+                <span class="n">results</span><span class="p">[</span><span class="s2">&quot;spect_mad&quot;</span><span class="p">][:,</span> <span class="n">pixel_start</span><span class="p">:</span><span class="n">pixel_end</span><span class="p">,</span> <span class="n">l_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span>
+                    <span class="n">mad</span><span class="p">(</span><span class="n">line_val</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">)</span>
+
+        <span class="n">obj_dict</span> <span class="o">=</span> <span class="n">ObjDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">p_idx</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atmos_params</span><span class="p">):</span>
+            <span class="n">obj_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span><span class="p">,</span> <span class="o">*</span><span class="n">im_shape</span><span class="p">)</span>
+            <span class="n">obj_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;mad&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="n">p_idx</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">atmos_size</span><span class="p">,</span> <span class="o">*</span><span class="n">im_shape</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">crispy_line_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">crispy_line_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Halpha&quot;</span><span class="p">:</span> <span class="s2">&quot;Halpha&quot;</span><span class="p">,</span> <span class="s2">&quot;CaII8542&quot;</span><span class="p">:</span> <span class="s2">&quot;Ca8542&quot;</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">l_idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_profiles</span><span class="p">):</span>
+            <span class="n">crispy_line</span> <span class="o">=</span> <span class="n">crispy_line_mapping</span><span class="p">[</span><span class="n">line</span><span class="p">]</span>
+            <span class="n">obj_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crispy_line</span><span class="si">}</span><span class="s2">_true&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">transformed_lines</span><span class="p">[</span><span class="n">line</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span> <span class="o">*</span><span class="n">im_shape</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">obj_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crispy_line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">line</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span> <span class="o">*</span><span class="n">im_shape</span>
+            <span class="p">)</span>
+            <span class="n">obj_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">crispy_line</span><span class="si">}</span><span class="s2">_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;spect_mad&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="n">l_idx</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">line_profile_size</span><span class="p">,</span> <span class="o">*</span><span class="n">im_shape</span>
+            <span class="p">)</span>
+
+        <span class="n">inversion</span> <span class="o">=</span> <span class="n">Inversion</span><span class="p">(</span>
+            <span class="n">obj_dict</span><span class="p">,</span>
+            <span class="n">crisp_seq</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_stratification</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">inversion</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
