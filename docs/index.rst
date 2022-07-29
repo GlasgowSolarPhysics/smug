@@ -11,6 +11,7 @@ Welcome to smug's documentation!
    :caption: Contents:
 
    auto_examples/index
+   limber-api
    radynversion-api
 
 Introduction
@@ -22,6 +23,8 @@ SMUG provides easy access to the pretrained models, which will be automatically 
 
 .. _RADYNVERSION: https://github.com/Goobley/Radynversion
 .. _Shaun: https://github.com/bionictoucan/shaun
+
+Please see the example gallery and the tests in the repository for an illustration of how to apply these models.
 
 Indices and tables
 ==================
