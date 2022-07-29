@@ -1,5 +1,5 @@
 from copy import copy
-from typing import Optional
+from typing import Dict, List, Optional, Union
 
 import astropy.units as u
 import numpy as np
@@ -48,10 +48,10 @@ class RadynversionAdapter:
     def __init__(
         self,
         model: RadynversionModel,
-        atmos_params,
-        line_profiles,
-        line_half_width,
-        z_stratification,
+        atmos_params: List[str],
+        line_profiles: List[str],
+        line_half_width: List[float],
+        z_stratification: np.ndarray,
         dev: Optional[torch.device] = None,
     ):
         self.model = model
@@ -66,22 +66,22 @@ class RadynversionAdapter:
         self.model.eval()
 
     @staticmethod
-    def to_tensor(x):
+    def to_tensor(x: np.ndarray) -> torch.Tensor:
         """Convert a numpy array to torch Tensor and ensure float32 dtype."""
         return torch.from_numpy(x).float()
 
     @staticmethod
-    def transform_ne(ne):
+    def transform_ne(ne: torch.Tensor) -> torch.Tensor:
         """Transform ne for input into the network (log10)."""
         return torch.log10(ne)
 
     @staticmethod
-    def transform_temperature(temp):
+    def transform_temperature(temp: torch.Tensor) -> torch.Tensor:
         """Transform temperature for input into the network (log10)."""
         return torch.log10(temp)
 
     @staticmethod
-    def transform_vel(v):
+    def transform_vel(v: torch.Tensor) -> torch.Tensor:
         """Transform velocity for input into the network."""
         vel_sign = v / torch.abs(v)
         vel_sign[torch.isnan(vel_sign)] = 0.0
@@ -89,39 +89,39 @@ class RadynversionAdapter:
         return vel
 
     @staticmethod
-    def strip_units_ne(ne):
+    def strip_units_ne(ne: np.ndarray) -> np.ndarray:
         """Convert ne to astropy units of cm^{-3} and return the value."""
         return (ne << u.cm ** (-3)).value
 
     @staticmethod
-    def strip_units_temperature(vel):
+    def strip_units_temperature(vel: np.ndarray) -> np.ndarray:
         """Convert temperature to astropy units of K and return the value."""
         return (vel << u.K).value
 
     @staticmethod
-    def strip_units_vel(vel):
-        """Convert temperature to astropy units of km/s and return the value."""
+    def strip_units_vel(vel: np.ndarray) -> np.ndarray:
+        """Convert velocity to astropy units of km/s and return the value."""
         return (vel << (u.km / u.s)).value
 
     @staticmethod
-    def inv_transform_ne(ne):
+    def inv_transform_ne(ne: torch.Tensor) -> torch.Tensor:
         """Inverse transform ne for output from the network."""
         return 10**ne
 
     @staticmethod
-    def inv_transform_temperature(temp):
+    def inv_transform_temperature(temp: torch.Tensor) -> torch.Tensor:
         """Inverse transform temperature for output from the network."""
         return 10**temp
 
     @staticmethod
-    def inv_transform_vel(v):
+    def inv_transform_vel(v: torch.Tensor) -> torch.Tensor:
         """Inverse transform velocity for output from the network."""
         v_sign = v / torch.abs(v)
         v_sign[torch.isnan(v_sign)] = 0.0
         vel = v_sign * (10 ** torch.abs(v) - 1.0)
         return vel
 
-    def transform_atmosphere(self, /, **kwargs):
+    def transform_atmosphere(self, /, **kwargs) -> torch.Tensor:
         """Construct a tensor of transformed atmospheric parameters for input
         into the network.
 
@@ -176,19 +176,21 @@ class RadynversionAdapter:
 
         return result
 
-    def inv_transform_atmosphere(self, atmos, ignore=None):
+    def inv_transform_atmosphere(
+        self, atmos: torch.Tensor, ignore: Optional[List[str]] = None
+    ) -> Dict[str, torch.Tensor]:
         """Convert and unpack a transformed atmosphere into a dict by parameter.
 
         Parameters
         ----------
-        atmos : array-like
+        atmos : torch.Tensor
             The packed atmosphere to expand
-        ignore : list of str
+        ignore : list of str, optional
             Parameters to ignore in the inverse transformation step.
 
         Returns
         -------
-        dict of array-like
+        dict of str to torch.Tensor
             The atmospheric parameters
         """
         Nspace = self.model.atmos_size
@@ -201,7 +203,7 @@ class RadynversionAdapter:
                 result[param] = trans(atmos[:, i * Nspace : (i + 1) * Nspace])
         return result
 
-    def line_grids(self):
+    def line_grids(self) -> Dict[str, np.ndarray]:
         """The wavelength grid expected for each line, in a dict by line name.
         Wavelengths are in Angstrom relative to rest wavelength.
         """
@@ -214,7 +216,9 @@ class RadynversionAdapter:
             for i, line in enumerate(self.line_profiles)
         }
 
-    def interpolate_lines(self, lines, delta_lambdas):
+    def interpolate_lines(
+        self, lines: Dict[str, np.ndarray], delta_lambdas: Dict[str, np.ndarray]
+    ) -> Dict[str, torch.Tensor]:
         """Interpolate lines from their current grid to the one expected by the
         model.
 
@@ -229,7 +233,7 @@ class RadynversionAdapter:
 
         Returns
         -------
-        dict of str to array-like
+        dict of str to torch.Tensor
             The interpolated lines on the grids given by `self.line_grids()`.
         """
         grids = self.line_grids()
@@ -251,7 +255,9 @@ class RadynversionAdapter:
                 )
         return interp_lines
 
-    def transform_lines(self, lines, delta_lambdas):
+    def transform_lines(
+        self, lines: Dict[str, np.ndarray], delta_lambdas: Dict[str, np.ndarray]
+    ) -> Dict[str, torch.Tensor]:
         """Interpolate and transform (normalise) lines ready for use in the
         network.
 
@@ -271,7 +277,7 @@ class RadynversionAdapter:
         """
         interp_lines = self.interpolate_lines(lines, delta_lambdas)
         maxs = {
-            line: torch.max(array, axis=1)[0] for line, array in interp_lines.items()
+            line: torch.max(array, dim=1)[0] for line, array in interp_lines.items()
         }
         max_per_obs = torch.zeros(interp_lines[self.line_profiles[0]].shape[0])
         for _, max_val in maxs.items():
@@ -281,7 +287,9 @@ class RadynversionAdapter:
         }
         return transformed_lines
 
-    def forward_model(self, atmos, cpu=True):
+    def forward_model(
+        self, atmos: torch.Tensor, cpu: bool = True
+    ) -> Dict[str, torch.Tensor]:
         """
         Compute the line profiles associated with atmospheric samples and return
         in a dict by line name. This result also contains the associated latent
@@ -296,7 +304,7 @@ class RadynversionAdapter:
 
         Returns
         -------
-        dict of str to tensor
+        dict of str to torch.Tensor
             The line profiles associated with these atmospheres.
         """
         inp = atmos.to(self.dev)
@@ -319,7 +327,7 @@ class RadynversionAdapter:
 
         return result
 
-    def line_slice(self, idx):
+    def line_slice(self, idx: int) -> slice:
         """The slice associated with line of index `idx` in the packed
         [latent_space, lines] vector for the reverse process."""
         num_lines = len(self.line_profiles)
@@ -331,15 +339,20 @@ class RadynversionAdapter:
         return slice(line_start, line_end)
 
     def invert_lines(
-        self, lines, latent_space=None, batch_size=None, cpu=True, seed=None
-    ):
+        self,
+        lines: Dict[str, torch.Tensor],
+        latent_space: Optional[Union[np.ndarray, torch.Tensor]] = None,
+        batch_size: Optional[int] = None,
+        cpu: bool = True,
+        seed: Optional[int] = None,
+    ) -> torch.Tensor:
         """Invert spectral lines. The batch size is inferred from the length of the
         line arrays (i.e. one latent sample per line), or can be used to set the
         number latent draws for a _single_ observation.
 
-        lines : dict of str to array-like
+        lines : dict of str to torch.Tensor
             The transformed lines (see `transform_lines`).
-        latent_space : array-like, optional
+        latent_space : array-like or torch.Tensor, optional
             Fixed values to use for the latent space. Default: Draw new random samples.
         batch_size : int, optional
             The number of samples to draw if only one pixel of line profiles was
@@ -373,7 +386,7 @@ class RadynversionAdapter:
             latent_space = torch.randn(batch_size, self.model.latent_size)
 
         input = torch.zeros(batch_size, self.model.size)
-        input[:, : self.model.latent_size] = latent_space
+        input[:, : self.model.latent_size] = latent_space  # type: ignore
         for idx, line in enumerate(self.line_profiles):
             line_slice = self.line_slice(idx)
             input[:, line_slice] = lines[line]
@@ -389,14 +402,14 @@ class RadynversionAdapter:
     def invert_dual_cubes(
         self,
         crisp_seq: CRISPSequence,
-        batch_size=256,
-        latent_draws=128,
-        seed=None,
-        rotate=False,
-        crispy_line_mapping=None,
-        progress=True,
-        inverse_trans_ignore=None,
-    ):
+        batch_size: int = 256,
+        latent_draws: int = 128,
+        seed: Optional[int] = None,
+        rotate: bool = False,
+        crispy_line_mapping: Optional[Dict[str, str]] = None,
+        progress: bool = True,
+        inverse_trans_ignore: Optional[List[str]] = None,
+    ) -> Inversion:
         """Invert observations of spectral lines as loaded by the sst-crispy package.
 
         Parameters
@@ -423,7 +436,7 @@ class RadynversionAdapter:
         inverse_trans_ignore : list of str, optional
             Atmospheric parameters to ignore the when inverse transforming the
             inverted atmospheres (passed to `inv_transform_atmosphere`). Default
-            works with default pretrained Radynversion models.
+            ('ne', 'temperature'), works with default pretrained Radynversion models.
 
         Returns
         -------
