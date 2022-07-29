@@ -10,6 +10,7 @@ Welcome to smug's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   auto_examples/index
    radynversion-api
 
 Introduction
