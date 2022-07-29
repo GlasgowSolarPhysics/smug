@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Radynversion Example &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simple Limber Example" href="plot_limber.html" />
+    <link rel="prev" title="smug Examples Gallery" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">smug Examples Gallery</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simple Radynversion Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_limber.html">Simple Limber Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../radynversion-api.html">Radynversion API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">smug Examples Gallery</a> &raquo;</li>
+      <li>Simple Radynversion Example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_radynversion_adapter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-radynversion-adapter-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="simple-radynversion-example">
+<span id="sphx-glr-auto-examples-plot-radynversion-adapter-py"></span><h1>Simple Radynversion Example<a class="headerlink" href="#simple-radynversion-example" title="Permalink to this heading"></a></h1>
+<p>The following illustrates configuring and using Radynversion with some small SST/CRISP images.
+To load this data we use the <a class="reference external" href="https://github.com/bionictoucan/crispy">crispy package</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crispy</span> <span class="kn">import</span> <span class="n">CRISPSequence</span>
+<span class="kn">from</span> <span class="nn">crispy.utils</span> <span class="kn">import</span> <span class="n">CRISP_sequence_constructor</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">smug.radynversion_adapter</span> <span class="kn">import</span> <span class="n">RadynversionAdapter</span>
+<span class="kn">from</span> <span class="nn">smug.radynversion_model</span> <span class="kn">import</span> <span class="n">model_params</span><span class="p">,</span> <span class="n">pretrained_radynversion</span>
+</pre></div>
+</div>
+<p>Plot the Halpha intensity map (see crispy’s documentation for how this is used.).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;../tests/mini_crisp_l2_20140906_152724_6563_r00459.fits&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;../tests/mini_crisp_l2_20140906_152724_8542_r00459.fits&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">ims</span> <span class="o">=</span> <span class="n">CRISPSequence</span><span class="p">(</span><span class="n">CRISP_sequence_constructor</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+<span class="n">ims</span><span class="o">.</span><span class="n">list</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">intensity_map</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_radynversion_adapter_001.png" srcset="../_images/sphx_glr_plot_radynversion_adapter_001.png" alt="2014-09-06T16:55:57.057 λ=6564.58Å (Δλ = -0.0Å)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/astropy/wcs/wcs.py:725: FITSFixedWarning: &#39;datfix&#39; made the change &#39;Set MJD-AVG to 56906.705521 from DATE-AVG&#39;.
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/astropy/wcs/wcs.py:725: FITSFixedWarning: &#39;datfix&#39; made the change &#39;Set MJD-AVG to 56906.705580 from DATE-AVG&#39;.
+  warnings.warn(
+/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/astropy/wcs/wcsapi/fitswcs.py:493: AstropyUserWarning: target cannot be converted to ICRS, so will not be set on SpectralCoord
+  warnings.warn(&#39;target cannot be converted to ICRS, so will &#39;
+/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/astropy/wcs/wcsapi/fitswcs.py:493: AstropyUserWarning: target cannot be converted to ICRS, so will not be set on SpectralCoord
+  warnings.warn(&#39;target cannot be converted to ICRS, so will &#39;
+</pre></div>
+</div>
+<p>Configure model, and Adapter class containing utilities to run the model and
+correctly transform the parameters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">radynversion_version</span> <span class="o">=</span> <span class="s2">&quot;1.1.1&quot;</span>
+<span class="n">ad</span> <span class="o">=</span> <span class="n">RadynversionAdapter</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">pretrained_radynversion</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">radynversion_version</span><span class="p">),</span>
+    <span class="o">**</span><span class="n">model_params</span><span class="p">[</span><span class="n">radynversion_version</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Radynversion_1.1.1.pth.tar
+
+  0%|          | 0.00/45.2M [00:00&lt;?, ?B/s]
+  0%|          | 32.0k/45.2M [00:00&lt;02:46, 284kB/s]
+  0%|          | 64.0k/45.2M [00:00&lt;02:48, 281kB/s]
+  0%|          | 128k/45.2M [00:00&lt;01:55, 409kB/s]
+  0%|          | 192k/45.2M [00:00&lt;01:40, 469kB/s]
+  1%|          | 304k/45.2M [00:00&lt;01:12, 653kB/s]
+  1%|1         | 480k/45.2M [00:00&lt;00:49, 955kB/s]
+  2%|1         | 800k/45.2M [00:00&lt;00:29, 1.56MB/s]
+  3%|2         | 1.27M/45.2M [00:00&lt;00:18, 2.45MB/s]
+  4%|4         | 2.03M/45.2M [00:01&lt;00:11, 3.83MB/s]
+  7%|7         | 3.25M/45.2M [00:01&lt;00:07, 6.02MB/s]
+ 11%|#         | 4.95M/45.2M [00:01&lt;00:04, 8.85MB/s]
+ 15%|#4        | 6.69M/45.2M [00:01&lt;00:03, 10.9MB/s]
+ 19%|#8        | 8.44M/45.2M [00:01&lt;00:03, 12.3MB/s]
+ 23%|##2       | 10.2M/45.2M [00:01&lt;00:02, 13.4MB/s]
+ 26%|##6       | 11.9M/45.2M [00:01&lt;00:02, 14.0MB/s]
+ 30%|###       | 13.7M/45.2M [00:01&lt;00:02, 14.5MB/s]
+ 34%|###4      | 15.4M/45.2M [00:02&lt;00:02, 14.2MB/s]
+ 38%|###8      | 17.2M/45.2M [00:02&lt;00:02, 14.7MB/s]
+ 42%|####1     | 18.9M/45.2M [00:02&lt;00:01, 14.8MB/s]
+ 46%|####5     | 20.7M/45.2M [00:02&lt;00:01, 15.1MB/s]
+ 50%|####9     | 22.4M/45.2M [00:02&lt;00:01, 15.2MB/s]
+ 53%|#####3    | 24.1M/45.2M [00:02&lt;00:01, 15.2MB/s]
+ 57%|#####7    | 25.8M/45.2M [00:02&lt;00:01, 15.3MB/s]
+ 61%|######    | 27.5M/45.2M [00:02&lt;00:01, 15.3MB/s]
+ 65%|######4   | 29.3M/45.2M [00:02&lt;00:01, 15.4MB/s]
+ 69%|######8   | 31.0M/45.2M [00:03&lt;00:00, 15.3MB/s]
+ 72%|#######2  | 32.7M/45.2M [00:03&lt;00:00, 15.4MB/s]
+ 76%|#######6  | 34.5M/45.2M [00:03&lt;00:00, 15.4MB/s]
+ 80%|########  | 36.2M/45.2M [00:03&lt;00:00, 15.4MB/s]
+ 84%|########3 | 37.9M/45.2M [00:03&lt;00:00, 15.5MB/s]
+ 88%|########7 | 39.7M/45.2M [00:03&lt;00:00, 15.5MB/s]
+ 92%|#########1| 41.4M/45.2M [00:03&lt;00:00, 15.5MB/s]
+ 95%|#########5| 43.1M/45.2M [00:03&lt;00:00, 15.5MB/s]
+ 99%|#########9| 44.8M/45.2M [00:03&lt;00:00, 15.4MB/s]
+100%|##########| 45.2M/45.2M [00:04&lt;00:00, 11.8MB/s]
+</pre></div>
+</div>
+<p>Run the inversion for a small slice of the data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">invert_dual_cubes</span><span class="p">(</span><span class="n">ims</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/site-packages/astropy/wcs/wcsapi/fitswcs.py:493: AstropyUserWarning: target cannot be converted to ICRS, so will not be set on SpectralCoord
+  warnings.warn(&#39;target cannot be converted to ICRS, so will &#39;
+
+  0%|          | 0/2 [00:00&lt;?, ?it/s]
+ 50%|#####     | 1/2 [00:02&lt;00:02,  2.46s/it]
+100%|##########| 2/2 [00:03&lt;00:00,  1.84s/it]
+100%|##########| 2/2 [00:03&lt;00:00,  1.93s/it]
+</pre></div>
+</div>
+<p>Display the inversion results for a pixel</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot_params</span><span class="p">(</span><span class="n">eb</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_radynversion_adapter_002.png" srcset="../_images/sphx_glr_plot_radynversion_adapter_002.png" alt="2014-09-06T16:55:57.057, Electron Number Density, Electron Temperature, Bulk Plasma Flow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.929 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-radynversion-adapter-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/8d702b4f8c36272918d6a139e8813e79/plot_radynversion_adapter.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_radynversion_adapter.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/49c086a79b63856b7aade431bd3c571c/plot_radynversion_adapter.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_radynversion_adapter.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="smug Examples Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_limber.html" class="btn btn-neutral float-right" title="Simple Limber Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

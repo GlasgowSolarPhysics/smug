@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Limber Example &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Radynversion API Documentation" href="../radynversion-api.html" />
+    <link rel="prev" title="Simple Radynversion Example" href="plot_radynversion_adapter.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">smug Examples Gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_radynversion_adapter.html">Simple Radynversion Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simple Limber Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../radynversion-api.html">Radynversion API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">smug Examples Gallery</a> &raquo;</li>
+      <li>Simple Limber Example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_limber.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-limber-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="simple-limber-example">
+<span id="sphx-glr-auto-examples-plot-limber-py"></span><h1>Simple Limber Example<a class="headerlink" href="#simple-limber-example" title="Permalink to this heading"></a></h1>
+<p>A simple example showing how to apply the Limber model to correct for Limb darkening in a small SST/CRISP image.
+This data is loaded using <cite>astropy.fits</cite>, but crispy could be used too.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">smug.limber_adapter</span> <span class="kn">import</span> <span class="n">LimberAdapter</span>
+<span class="kn">from</span> <span class="nn">smug.limber_model</span> <span class="kn">import</span> <span class="n">model_params</span><span class="p">,</span> <span class="n">pretrained_limber</span>
+</pre></div>
+</div>
+<p>Load the Ca 8542 Angstrom data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;../tests/mini_crisp_l2_20140906_152724_8542_r00459.fits&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Load pretrained limber network</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;CaII8542&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pretrained_limber</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/osborne/Limber_CaII8542_1.0.0.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Limber_CaII8542_1.0.0.pth.tar
+
+  0%|          | 0.00/77.7M [00:00&lt;?, ?B/s]
+  0%|          | 32.0k/77.7M [00:00&lt;04:50, 281kB/s]
+  0%|          | 64.0k/77.7M [00:00&lt;04:48, 282kB/s]
+  0%|          | 128k/77.7M [00:00&lt;03:22, 401kB/s]
+  0%|          | 208k/77.7M [00:00&lt;02:34, 527kB/s]
+  0%|          | 304k/77.7M [00:00&lt;02:06, 640kB/s]
+  1%|          | 480k/77.7M [00:00&lt;01:25, 946kB/s]
+  1%|          | 752k/77.7M [00:00&lt;00:57, 1.42MB/s]
+  1%|1         | 1.16M/77.7M [00:00&lt;00:37, 2.17MB/s]
+  2%|2         | 1.77M/77.7M [00:01&lt;00:24, 3.20MB/s]
+  4%|3         | 2.78M/77.7M [00:01&lt;00:15, 5.02MB/s]
+  6%|5         | 4.34M/77.7M [00:01&lt;00:09, 7.77MB/s]
+  8%|7         | 6.06M/77.7M [00:01&lt;00:07, 10.1MB/s]
+ 10%|#         | 7.81M/77.7M [00:01&lt;00:06, 11.8MB/s]
+ 12%|#2        | 9.53M/77.7M [00:01&lt;00:05, 12.9MB/s]
+ 14%|#4        | 11.3M/77.7M [00:01&lt;00:05, 13.7MB/s]
+ 17%|#6        | 13.0M/77.7M [00:01&lt;00:04, 14.3MB/s]
+ 19%|#8        | 14.7M/77.7M [00:01&lt;00:04, 14.6MB/s]
+ 21%|##1       | 16.5M/77.7M [00:02&lt;00:04, 14.8MB/s]
+ 23%|##3       | 18.2M/77.7M [00:02&lt;00:04, 15.0MB/s]
+ 26%|##5       | 19.9M/77.7M [00:02&lt;00:04, 15.0MB/s]
+ 28%|##7       | 21.6M/77.7M [00:02&lt;00:03, 15.1MB/s]
+ 30%|###       | 23.3M/77.7M [00:02&lt;00:03, 15.2MB/s]
+ 32%|###2      | 25.1M/77.7M [00:02&lt;00:03, 15.4MB/s]
+ 35%|###4      | 26.8M/77.7M [00:02&lt;00:03, 15.4MB/s]
+ 37%|###6      | 28.6M/77.7M [00:02&lt;00:03, 15.5MB/s]
+ 39%|###8      | 30.3M/77.7M [00:03&lt;00:03, 15.5MB/s]
+ 41%|####1     | 32.0M/77.7M [00:03&lt;00:03, 15.5MB/s]
+ 43%|####3     | 33.8M/77.7M [00:03&lt;00:02, 15.6MB/s]
+ 46%|####5     | 35.5M/77.7M [00:03&lt;00:02, 15.5MB/s]
+ 48%|####7     | 37.2M/77.7M [00:03&lt;00:02, 15.1MB/s]
+ 50%|#####     | 39.0M/77.7M [00:03&lt;00:02, 15.3MB/s]
+ 52%|#####2    | 40.8M/77.7M [00:03&lt;00:02, 15.4MB/s]
+ 55%|#####4    | 42.5M/77.7M [00:03&lt;00:02, 15.5MB/s]
+ 57%|#####6    | 44.2M/77.7M [00:03&lt;00:02, 15.5MB/s]
+ 59%|#####9    | 46.0M/77.7M [00:04&lt;00:02, 15.5MB/s]
+ 61%|######1   | 47.7M/77.7M [00:04&lt;00:02, 15.5MB/s]
+ 64%|######3   | 49.4M/77.7M [00:04&lt;00:01, 15.5MB/s]
+ 66%|######5   | 51.2M/77.7M [00:04&lt;00:01, 15.6MB/s]
+ 68%|######8   | 52.9M/77.7M [00:04&lt;00:01, 15.5MB/s]
+ 70%|#######   | 54.6M/77.7M [00:04&lt;00:01, 15.5MB/s]
+ 72%|#######2  | 56.3M/77.7M [00:04&lt;00:01, 15.4MB/s]
+ 75%|#######4  | 58.1M/77.7M [00:04&lt;00:01, 15.5MB/s]
+ 77%|#######6  | 59.8M/77.7M [00:05&lt;00:01, 15.4MB/s]
+ 79%|#######9  | 61.5M/77.7M [00:05&lt;00:01, 15.5MB/s]
+ 81%|########1 | 63.3M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 84%|########3 | 65.0M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 86%|########5 | 66.8M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 88%|########8 | 68.5M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 90%|######### | 70.2M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 93%|#########2| 71.9M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 95%|#########4| 73.7M/77.7M [00:05&lt;00:00, 15.5MB/s]
+ 97%|#########6| 75.4M/77.7M [00:06&lt;00:00, 15.5MB/s]
+ 99%|#########9| 77.1M/77.7M [00:06&lt;00:00, 15.6MB/s]
+100%|##########| 77.7M/77.7M [00:06&lt;00:00, 13.1MB/s]
+</pre></div>
+</div>
+<p>Compute wavelength grid used in Limber model from provided data, and construct Adapter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+    <span class="o">-</span><span class="n">model_params</span><span class="p">[</span><span class="n">line</span><span class="p">][</span><span class="s2">&quot;half_width&quot;</span><span class="p">],</span>
+    <span class="n">model_params</span><span class="p">[</span><span class="n">line</span><span class="p">][</span><span class="s2">&quot;half_width&quot;</span><span class="p">],</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">limber_ca</span> <span class="o">=</span> <span class="n">LimberAdapter</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Load wavelengths present in data file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">central_wavelength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">data_wavelength</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">central_wavelength</span>
+</pre></div>
+</div>
+<p>Run the network to reproject the data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">limber_ca</span><span class="o">.</span><span class="n">reproject_data</span><span class="p">(</span>
+    <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;&lt;f4&quot;</span><span class="p">),</span>
+    <span class="n">data_wavelength</span><span class="p">,</span>
+    <span class="n">mu_observed</span><span class="o">=</span><span class="mf">0.565</span><span class="p">,</span>
+    <span class="n">reconstruct_original_shape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the output for a pixel, note the swapped indexing as we set <cite>reconstruct_original_shape</cite> to False.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;&lt;f4&quot;</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">out</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_wavelength</span><span class="p">,</span> <span class="n">a</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">:])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_limber_001.png" srcset="../_images/sphx_glr_plot_limber_001.png" alt="plot limber" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.364 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-limber-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/d82ddfccab2c3f81756404e4e949f8b9/plot_limber.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_limber.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/19d0f0b98d5d9f4938f84c7ffdd82718/plot_limber.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_limber.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot_radynversion_adapter.html" class="btn btn-neutral float-left" title="Simple Radynversion Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../radynversion-api.html" class="btn btn-neutral float-right" title="Radynversion API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
