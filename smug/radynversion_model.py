@@ -274,8 +274,8 @@ model_params = {
 for each pre-trained versioned Radynversion model."""
 
 model_urls = {
-    "1.0.1": "https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.0.1.pth.tar",
-    "1.1.1": "https://www.astro.gla.ac.uk/users/osborne/Radynversion_1.1.1.pth.tar",
+    "1.0.1": "https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Radynversion_1.0.1.pth.tar",
+    "1.1.1": "https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Radynversion_1.1.1.pth.tar",
 }
 """dict of str to str: urls to the weights for the pre-trained versioned Radynversion models"""
 

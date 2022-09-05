@@ -128,8 +128,8 @@ model_params = {
 }
 
 model_urls = {
-    "Halpha": "https://www.astro.gla.ac.uk/users/osborne/Limber_Halpha_1.0.0.pth.tar",
-    "CaII8542": "https://www.astro.gla.ac.uk/users/osborne/Limber_CaII8542_1.0.0.pth.tar",
+    "Halpha": "https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Limber_Halpha_1.0.0.pth.tar",
+    "CaII8542": "https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Limber_CaII8542_1.0.0.pth.tar",
 }
 
 
