@@ -13,6 +13,7 @@ Welcome to smug's documentation!
    auto_examples/index
    limber-api
    radynversion-api
+   shaun-api
 
 Introduction
 ------------
