@@ -45,12 +45,14 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">smug Examples Gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_shaun.html">Simple Shaun Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_radynversion_adapter.html">Simple Radynversion Example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Simple Limber Example</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../limber-api.html">Limber API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../radynversion-api.html">Radynversion API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../shaun-api.html">Shaun API Documentation</a></li>
 </ul>
 
         </div>
@@ -103,62 +105,69 @@ This data is loaded using <cite>astropy.fits</cite>, but crispy could be used to
 <span class="n">model</span> <span class="o">=</span> <span class="n">pretrained_limber</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/osborne/Limber_CaII8542_1.0.0.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Limber_CaII8542_1.0.0.pth.tar
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading: &quot;https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Limber_CaII8542_1.0.0.pth.tar&quot; to /home/runner/.cache/torch/hub/checkpoints/Limber_CaII8542_1.0.0.pth.tar
 
   0%|          | 0.00/77.7M [00:00&lt;?, ?B/s]
-  0%|          | 32.0k/77.7M [00:00&lt;05:36, 242kB/s]
-  0%|          | 80.0k/77.7M [00:00&lt;04:20, 313kB/s]
-  0%|          | 128k/77.7M [00:00&lt;04:02, 335kB/s]
-  0%|          | 208k/77.7M [00:00&lt;03:04, 441kB/s]
-  0%|          | 336k/77.7M [00:00&lt;02:09, 629kB/s]
-  1%|          | 592k/77.7M [00:00&lt;01:15, 1.07MB/s]
-  1%|1         | 1.00M/77.7M [00:00&lt;00:45, 1.78MB/s]
-  2%|2         | 1.70M/77.7M [00:01&lt;00:27, 2.94MB/s]
-  4%|3         | 2.84M/77.7M [00:01&lt;00:16, 4.77MB/s]
-  6%|5         | 4.53M/77.7M [00:01&lt;00:10, 7.31MB/s]
-  8%|8         | 6.28M/77.7M [00:01&lt;00:08, 9.20MB/s]
- 10%|#         | 8.00M/77.7M [00:01&lt;00:07, 10.4MB/s]
- 13%|#2        | 9.73M/77.7M [00:01&lt;00:06, 11.3MB/s]
- 15%|#4        | 11.5M/77.7M [00:01&lt;00:05, 11.8MB/s]
- 17%|#6        | 13.2M/77.7M [00:02&lt;00:05, 12.2MB/s]
- 19%|#9        | 14.9M/77.7M [00:02&lt;00:05, 12.5MB/s]
- 21%|##1       | 16.6M/77.7M [00:02&lt;00:05, 12.7MB/s]
- 24%|##3       | 18.3M/77.7M [00:02&lt;00:04, 12.9MB/s]
- 26%|##5       | 20.1M/77.7M [00:02&lt;00:04, 13.0MB/s]
- 28%|##8       | 21.8M/77.7M [00:02&lt;00:04, 13.1MB/s]
- 30%|###       | 23.5M/77.7M [00:02&lt;00:04, 12.6MB/s]
- 32%|###2      | 25.3M/77.7M [00:03&lt;00:04, 12.9MB/s]
- 35%|###4      | 27.0M/77.7M [00:03&lt;00:04, 12.2MB/s]
- 37%|###6      | 28.7M/77.7M [00:03&lt;00:04, 12.6MB/s]
- 39%|###9      | 30.4M/77.7M [00:03&lt;00:03, 12.8MB/s]
- 41%|####1     | 32.2M/77.7M [00:03&lt;00:03, 12.9MB/s]
- 44%|####3     | 33.9M/77.7M [00:03&lt;00:03, 13.0MB/s]
- 46%|####5     | 35.6M/77.7M [00:03&lt;00:03, 13.1MB/s]
- 48%|####8     | 37.3M/77.7M [00:03&lt;00:03, 13.1MB/s]
- 50%|#####     | 39.1M/77.7M [00:04&lt;00:03, 13.2MB/s]
- 52%|#####2    | 40.8M/77.7M [00:04&lt;00:02, 13.2MB/s]
- 55%|#####4    | 42.5M/77.7M [00:04&lt;00:02, 13.3MB/s]
- 57%|#####6    | 44.3M/77.7M [00:04&lt;00:02, 13.3MB/s]
- 59%|#####9    | 46.0M/77.7M [00:04&lt;00:02, 13.3MB/s]
- 61%|######1   | 47.7M/77.7M [00:04&lt;00:02, 13.3MB/s]
- 64%|######3   | 49.5M/77.7M [00:04&lt;00:02, 13.3MB/s]
- 66%|######5   | 51.2M/77.7M [00:05&lt;00:02, 13.3MB/s]
- 68%|######8   | 52.9M/77.7M [00:05&lt;00:01, 13.3MB/s]
- 70%|#######   | 54.6M/77.7M [00:05&lt;00:01, 13.3MB/s]
- 72%|#######2  | 56.4M/77.7M [00:05&lt;00:01, 13.3MB/s]
- 75%|#######4  | 58.1M/77.7M [00:05&lt;00:01, 13.3MB/s]
- 77%|#######6  | 59.8M/77.7M [00:05&lt;00:01, 13.2MB/s]
- 79%|#######9  | 61.5M/77.7M [00:05&lt;00:01, 13.2MB/s]
- 81%|########1 | 63.2M/77.7M [00:06&lt;00:01, 13.1MB/s]
- 84%|########3 | 65.0M/77.7M [00:06&lt;00:01, 13.3MB/s]
- 86%|########5 | 66.7M/77.7M [00:06&lt;00:00, 13.3MB/s]
- 88%|########8 | 68.5M/77.7M [00:06&lt;00:00, 13.3MB/s]
- 90%|######### | 70.2M/77.7M [00:06&lt;00:00, 13.3MB/s]
- 93%|#########2| 71.9M/77.7M [00:06&lt;00:00, 13.3MB/s]
- 95%|#########4| 73.7M/77.7M [00:06&lt;00:00, 13.3MB/s]
- 97%|#########6| 75.4M/77.7M [00:07&lt;00:00, 13.3MB/s]
- 99%|#########9| 77.1M/77.7M [00:07&lt;00:00, 13.3MB/s]
-100%|##########| 77.7M/77.7M [00:07&lt;00:00, 11.4MB/s]
+  0%|          | 32.0k/77.7M [00:00&lt;04:52, 278kB/s]
+  0%|          | 64.0k/77.7M [00:00&lt;04:54, 277kB/s]
+  0%|          | 96.0k/77.7M [00:00&lt;04:53, 277kB/s]
+  0%|          | 144k/77.7M [00:00&lt;04:04, 332kB/s]
+  0%|          | 208k/77.7M [00:00&lt;03:16, 413kB/s]
+  0%|          | 288k/77.7M [00:00&lt;02:39, 508kB/s]
+  0%|          | 384k/77.7M [00:00&lt;02:11, 615kB/s]
+  1%|          | 496k/77.7M [00:00&lt;01:51, 729kB/s]
+  1%|          | 656k/77.7M [00:01&lt;01:26, 935kB/s]
+  1%|1         | 848k/77.7M [00:01&lt;01:09, 1.16MB/s]
+  1%|1         | 1.09M/77.7M [00:01&lt;00:52, 1.53MB/s]
+  2%|1         | 1.42M/77.7M [00:01&lt;00:40, 1.95MB/s]
+  2%|2         | 1.86M/77.7M [00:01&lt;00:31, 2.54MB/s]
+  3%|3         | 2.41M/77.7M [00:01&lt;00:24, 3.23MB/s]
+  4%|3         | 3.03M/77.7M [00:01&lt;00:19, 3.93MB/s]
+  5%|4         | 3.80M/77.7M [00:01&lt;00:16, 4.79MB/s]
+  6%|6         | 4.70M/77.7M [00:02&lt;00:13, 5.77MB/s]
+  7%|7         | 5.77M/77.7M [00:02&lt;00:10, 6.87MB/s]
+  9%|9         | 7.09M/77.7M [00:02&lt;00:08, 8.34MB/s]
+ 11%|#1        | 8.69M/77.7M [00:02&lt;00:07, 10.1MB/s]
+ 13%|#3        | 10.5M/77.7M [00:02&lt;00:05, 11.8MB/s]
+ 16%|#5        | 12.2M/77.7M [00:02&lt;00:05, 12.9MB/s]
+ 18%|#7        | 13.9M/77.7M [00:02&lt;00:04, 13.6MB/s]
+ 20%|##        | 15.7M/77.7M [00:02&lt;00:04, 14.2MB/s]
+ 22%|##2       | 17.4M/77.7M [00:02&lt;00:04, 14.6MB/s]
+ 25%|##4       | 19.2M/77.7M [00:03&lt;00:04, 14.9MB/s]
+ 27%|##6       | 20.9M/77.7M [00:03&lt;00:03, 15.0MB/s]
+ 29%|##9       | 22.6M/77.7M [00:03&lt;00:03, 15.1MB/s]
+ 31%|###1      | 24.3M/77.7M [00:03&lt;00:03, 15.2MB/s]
+ 34%|###3      | 26.1M/77.7M [00:03&lt;00:03, 15.2MB/s]
+ 36%|###5      | 27.8M/77.7M [00:03&lt;00:03, 15.3MB/s]
+ 38%|###8      | 29.6M/77.7M [00:03&lt;00:03, 15.4MB/s]
+ 40%|####      | 31.3M/77.7M [00:03&lt;00:03, 15.5MB/s]
+ 43%|####2     | 33.1M/77.7M [00:04&lt;00:03, 15.4MB/s]
+ 45%|####4     | 34.8M/77.7M [00:04&lt;00:02, 15.4MB/s]
+ 47%|####6     | 36.5M/77.7M [00:04&lt;00:02, 15.4MB/s]
+ 49%|####9     | 38.3M/77.7M [00:04&lt;00:02, 15.5MB/s]
+ 51%|#####1    | 40.0M/77.7M [00:04&lt;00:02, 15.4MB/s]
+ 54%|#####3    | 41.8M/77.7M [00:04&lt;00:02, 15.3MB/s]
+ 56%|#####5    | 43.5M/77.7M [00:04&lt;00:02, 15.3MB/s]
+ 58%|#####8    | 45.2M/77.7M [00:04&lt;00:02, 15.4MB/s]
+ 60%|######    | 47.0M/77.7M [00:04&lt;00:02, 15.5MB/s]
+ 63%|######2   | 48.8M/77.7M [00:05&lt;00:01, 15.5MB/s]
+ 65%|######4   | 50.5M/77.7M [00:05&lt;00:01, 15.5MB/s]
+ 67%|######7   | 52.3M/77.7M [00:05&lt;00:01, 15.6MB/s]
+ 69%|######9   | 54.0M/77.7M [00:05&lt;00:01, 15.5MB/s]
+ 72%|#######1  | 55.7M/77.7M [00:05&lt;00:01, 15.4MB/s]
+ 74%|#######3  | 57.5M/77.7M [00:05&lt;00:01, 15.4MB/s]
+ 76%|#######6  | 59.2M/77.7M [00:05&lt;00:01, 15.4MB/s]
+ 78%|#######8  | 61.0M/77.7M [00:05&lt;00:01, 15.4MB/s]
+ 81%|########  | 62.7M/77.7M [00:06&lt;00:01, 15.5MB/s]
+ 83%|########2 | 64.4M/77.7M [00:06&lt;00:00, 15.5MB/s]
+ 85%|########5 | 66.2M/77.7M [00:06&lt;00:00, 15.4MB/s]
+ 87%|########7 | 67.9M/77.7M [00:06&lt;00:00, 15.4MB/s]
+ 90%|########9 | 69.6M/77.7M [00:06&lt;00:00, 15.4MB/s]
+ 92%|#########1| 71.4M/77.7M [00:06&lt;00:00, 15.4MB/s]
+ 94%|#########3| 73.1M/77.7M [00:06&lt;00:00, 15.3MB/s]
+ 96%|#########6| 74.8M/77.7M [00:06&lt;00:00, 15.4MB/s]
+ 99%|#########8| 76.6M/77.7M [00:06&lt;00:00, 15.5MB/s]
+100%|##########| 77.7M/77.7M [00:06&lt;00:00, 11.6MB/s]
 </pre></div>
 </div>
 <p>Compute wavelength grid used in Limber model from provided data, and construct Adapter.</p>
@@ -197,7 +206,7 @@ This data is loaded using <cite>astropy.fits</cite>, but crispy could be used to
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_limber_001.png" srcset="../_images/sphx_glr_plot_limber_001.png" alt="Limber applied to Ca ɪɪ 8542 $\AA$" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.332 seconds)</p>
+<img src="../_images/sphx_glr_plot_limber_001.png" srcset="../_images/sphx_glr_plot_limber_001.png" alt="Limber applied to Ca ɪɪ 8542 $\AA$" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.877 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-limber-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/d82ddfccab2c3f81756404e4e949f8b9/plot_limber.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_limber.py</span></code></a></p>

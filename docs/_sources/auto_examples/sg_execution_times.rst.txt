@@ -5,10 +5,12 @@
 
 Computation times
 =================
-**00:22.411** total execution time for **auto_examples** files:
+**00:56.269** total execution time for **auto_examples** files:
 
 +-----------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_radynversion_adapter.py` (``plot_radynversion_adapter.py``) | 00:14.079 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_shaun.py` (``plot_shaun.py``)                               | 00:30.225 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_limber.py` (``plot_limber.py``)                             | 00:08.332 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_radynversion_adapter.py` (``plot_radynversion_adapter.py``) | 00:17.167 | 0.0 MB |
++-----------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_plot_limber.py` (``plot_limber.py``)                             | 00:08.877 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------+-----------+--------+

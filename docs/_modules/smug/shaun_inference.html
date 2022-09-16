@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>smug.shaun_inference &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto_examples/index.html">smug Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../limber-api.html">Limber API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../radynversion-api.html">Radynversion API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../shaun-api.html">Shaun API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>smug.shaun_inference</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for smug.shaun_inference</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">crispy.utils</span> <span class="kn">import</span> <span class="n">mosaic</span><span class="p">,</span> <span class="n">mosaic_cube</span><span class="p">,</span> <span class="n">segment_cube</span><span class="p">,</span> <span class="n">segmentation</span>
+
+<span class="kn">from</span> <span class="nn">.shaun_model</span> <span class="kn">import</span> <span class="n">Shaun</span>
+
+
+<div class="viewcode-block" id="Corrector"><a class="viewcode-back" href="../../shaun-api.html#smug.shaun_inference.Corrector">[docs]</a><span class="k">class</span> <span class="nc">Corrector</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the object to correct for seeing in observations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ckp : Dict, containing the torch checkpoint</span>
+<span class="sd">        The data needed to reconstruct the Shaun model.</span>
+<span class="sd">    norm : int</span>
+<span class="sd">        The normalisation factor used during training (e.g. 1514 for CaII8542,</span>
+<span class="sd">        and 3145 for Halpha).</span>
+<span class="sd">    map_location : torch.device, optional</span>
+<span class="sd">        Where to map the model for inference.</span>
+<span class="sd">    in_channels : int</span>
+<span class="sd">        The number of channels of the input images.</span>
+<span class="sd">    out_channels : int</span>
+<span class="sd">        The number of channels of the output images.</span>
+<span class="sd">    nef : int</span>
+<span class="sd">        The number of base feature maps used in the first convolutional layer.</span>
+<span class="sd">    error : float, optional</span>
+<span class="sd">        The error on the estimates from the network. Default is None which takes the last training error from the model file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ckp</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">map_location</span><span class="p">,</span> <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nef</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">map_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">map_location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Shaun</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">nef</span><span class="o">=</span><span class="n">nef</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading Shaun model&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">ckp</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">ckp</span><span class="p">[</span><span class="s2">&quot;losses&quot;</span><span class="p">][</span><span class="s2">&quot;train_l&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&gt; model loaded.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Corrector.correct_image"><a class="viewcode-back" href="../../shaun-api.html#smug.shaun_inference.Corrector.correct_image">[docs]</a>    <span class="k">def</span> <span class="nf">correct_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class method does the correction on the images.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        img : numpy.ndarray</span>
+<span class="sd">            The image to be corrected by the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">img_shape</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">segmentation</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">img</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+                <span class="k">return</span> <span class="n">mosaic</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">img_shape</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
+            <span class="k">elif</span> <span class="n">img</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">segment_cube</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">im</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+                    <span class="n">im</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                    <span class="n">out</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">im</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+                <span class="k">return</span> <span class="n">mosaic_cube</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">img_shape</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span></div></div>
+
+
+<div class="viewcode-block" id="SpeedyCorrector"><a class="viewcode-back" href="../../shaun-api.html#smug.shaun_inference.SpeedyCorrector">[docs]</a><span class="k">class</span> <span class="nc">SpeedyCorrector</span><span class="p">(</span><span class="n">Corrector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is to do the same corrections but using the torchscript model. This is ~4x faster but limits the batch size to 16.</span>
+
+<span class="sd">    N.B. Currently the torchscript models are not provided as part of smug.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model_path : str</span>
+<span class="sd">        The path to the torchscript model.</span>
+<span class="sd">    error : float</span>
+<span class="sd">        The error to apply to the estimates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_path</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda:0&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
+
+        <span class="k">if</span> <span class="s2">&quot;ca8542&quot;</span> <span class="ow">in</span> <span class="n">model_path</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="mi">1514</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="mi">3145</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span></div>
+
+
+<span class="n">pretrained_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s2">&quot;CaII8542&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">):</span> <span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;nef&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;norm&quot;</span><span class="p">:</span> <span class="mi">1514</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">(</span><span class="s2">&quot;Halpha&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">):</span> <span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;nef&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="s2">&quot;norm&quot;</span><span class="p">:</span> <span class="mi">3145</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">model_urls</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;CaII8542&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Shaun_CaII8542_1.0.0.pth.tar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Halpha&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.astro.gla.ac.uk/users/USER-MANAGED/solar_model_weights/Shaun_Halpha_1.0.0.pth.tar&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="pretrained_shaun_corrector"><a class="viewcode-back" href="../../shaun-api.html#smug.shaun_inference.pretrained_shaun_corrector">[docs]</a><span class="k">def</span> <span class="nf">pretrained_shaun_corrector</span><span class="p">(</span>
+    <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="n">map_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Corrector</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load a pretrained Shaun model in a corrector. The weights will be cached As described by `torch.hub`. See their documentation for details.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    line : str</span>
+<span class="sd">        The spectral line to load the weights for, &quot;Halpha&quot; or &quot;CaII8542&quot;</span>
+<span class="sd">    version : str, optional</span>
+<span class="sd">        The version of the model to load. Default: 1.0.0</span>
+<span class="sd">    map_location : torch.device, optional</span>
+<span class="sd">        Where to remap arrays during the loading process, by default this is set</span>
+<span class="sd">        to &quot;CPU&quot; to allow loading on any platform.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">accepted_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pretrained_kwargs</span><span class="p">]</span>
+    <span class="n">accepted_versions</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pretrained_kwargs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_versions</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown version &#39;</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&#39; requested for Shaun, expected one of </span><span class="si">{</span><span class="n">accepted_versions</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">line</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted_lines</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown line &#39;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&#39; requested for Shaun, expected one of </span><span class="si">{</span><span class="n">accepted_lines</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pretrained_kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown line, version combination&#39;</span><span class="si">{</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; requested for Shaun, expected one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">pretrained_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">map_location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">map_location</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+    <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hub</span><span class="o">.</span><span class="n">load_state_dict_from_url</span><span class="p">(</span>
+        <span class="n">model_urls</span><span class="p">[</span><span class="n">line</span><span class="p">],</span> <span class="n">map_location</span><span class="o">=</span><span class="n">map_location</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Corrector</span><span class="p">(</span>
+        <span class="n">checkpoint</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">map_location</span><span class="p">,</span> <span class="o">**</span><span class="n">pretrained_kwargs</span><span class="p">[(</span><span class="n">line</span><span class="p">,</span> <span class="n">version</span><span class="p">)]</span>
+    <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

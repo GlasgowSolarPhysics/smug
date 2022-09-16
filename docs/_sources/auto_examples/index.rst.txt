@@ -14,6 +14,23 @@ Some simple examples using smug.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Simple Shaun Example">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_shaun_thumb.png
+    :alt: Simple Shaun Example
+
+  :ref:`sphx_glr_auto_examples_plot_shaun.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Simple Shaun Example</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The following illustrates configuring and using Radynversion with some small SST/CRISP images. ...">
 
 .. only:: html
@@ -54,6 +71,7 @@ Some simple examples using smug.
 .. toctree::
    :hidden:
 
+   /auto_examples/plot_shaun
    /auto_examples/plot_radynversion_adapter
    /auto_examples/plot_limber
 

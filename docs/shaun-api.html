@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shaun API Documentation &mdash; smug  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Radynversion API Documentation" href="radynversion-api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> smug
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">smug Examples Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limber-api.html">Limber API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="radynversion-api.html">Radynversion API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Shaun API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.shaun_blocks">smug.shaun_blocks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.shaun_inference">smug.shaun_inference module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-smug.shaun_model">smug.shaun_model module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">smug</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Shaun API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/shaun-api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="shaun-api-documentation">
+<h1>Shaun API Documentation<a class="headerlink" href="#shaun-api-documentation" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-smug.shaun_blocks">
+<span id="smug-shaun-blocks-module"></span><h2>smug.shaun_blocks module<a class="headerlink" href="#module-smug.shaun_blocks" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ConvBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_blocks.</span></span><span class="sig-name descname"><span class="pre">ConvBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reflect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'batch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ConvBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ConvBlock" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A modifiable convolutional layer for deep networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of channels fed into the convolutional layer.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of channels fed out of the convolutional layer.</p></li>
+<li><p><strong>kernel</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the convolutional kernel. Default is 3 e.g. 3x3 convolutional kernel.</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – The stride of the convolution. Default is 1.</p></li>
+<li><p><strong>pad</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of padding to use when calculating the convolution. Default is “reflect”.</p></li>
+<li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to include a bias in the linear transformation. Default is False.</p></li>
+<li><p><strong>normal</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of normalisation layer to use. Default is “batch”.</p></li>
+<li><p><strong>activation</strong> (<em>str</em><em>, </em><em>optional</em>) – The activation function to use. Default is “relu” to use the Rectified Linear Unit (ReLU) activation function.</p></li>
+<li><p><strong>upsample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to upsample the input to the layer. This is useful in decoder layers in autoencoders. Upsampling is done via a factor of 2 interpolation (it is only currently implemented assuming the size of the input is to be doubled, will be retconned to work for me if there is demand). Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ConvBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ConvBlock.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ConvBlock.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ConvTranspBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_blocks.</span></span><span class="sig-name descname"><span class="pre">ConvTranspBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'batch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ConvTranspBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ConvTranspBlock" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A modifiable transpose conovlutional layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of channels fed into the convolutional layer.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of channels fed out of the convolutional layer.</p></li>
+<li><p><strong>kernel</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the convolutional kernel. Default is 3 e.g. 3x3 convolutional kernel.</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – The stride of the convolution. Default is 1.</p></li>
+<li><p><strong>pad</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of padding to use when calculating the convolution. Default is “reflect”.</p></li>
+<li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to include a bias in the linear transformation. Default is False.</p></li>
+<li><p><strong>normal</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of normalisation layer to use. Default is “batch”.</p></li>
+<li><p><strong>activation</strong> (<em>str</em><em>, </em><em>optional</em>) – The activation function to use. Default is “relu” to use the Rectified Linear Unit (ReLU) activation function.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ConvTranspBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ConvTranspBlock.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ConvTranspBlock.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ResBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_blocks.</span></span><span class="sig-name descname"><span class="pre">ResBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reflect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'batch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ResBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ResBlock" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A modifiable residual block for deep neural networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of channels fed into the residual layer.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of channels fed out of the residual layer.</p></li>
+<li><p><strong>kernel</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the convolutional kernel. Default is 3 e.g. 3x3 convolutional kernel.</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – The stride of the convolution. Default is 1.</p></li>
+<li><p><strong>pad</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of padding to use when calculating the convolution. Default is “reflect”.</p></li>
+<li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to include a bias in the linear transformation. Defulat is False.</p></li>
+<li><p><strong>normal</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of normalisation layer to use. Default is “batch”.</p></li>
+<li><p><strong>activation</strong> (<em>str</em><em>, </em><em>optional</em>) – The activation function to use. Default is “relu” to use the Rectified Linear Unit (ReLU) activation function.</p></li>
+<li><p><strong>upsample</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to upsample the input to the layer. This is useful in decoder layers in autoencoders. Upsampling is done via a factor of 2 interpolation (it is only currently implemented assuming the size of the input is to be doubled, will be retconned to work for me if there is demand). Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.shaun_blocks.ResBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_blocks.html#ResBlock.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_blocks.ResBlock.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-smug.shaun_inference">
+<span id="smug-shaun-inference-module"></span><h2>smug.shaun_inference module<a class="headerlink" href="#module-smug.shaun_inference" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_inference.Corrector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_inference.</span></span><span class="sig-name descname"><span class="pre">Corrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ckp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_inference.html#Corrector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_inference.Corrector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the object to correct for seeing in observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ckp</strong> (<em>Dict</em><em>, </em><em>containing the torch checkpoint</em>) – The data needed to reconstruct the Shaun model.</p></li>
+<li><p><strong>norm</strong> (<em>int</em>) – The normalisation factor used during training (e.g. 1514 for CaII8542,
+and 3145 for Halpha).</p></li>
+<li><p><strong>map_location</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Where to map the model for inference.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of channels of the input images.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of channels of the output images.</p></li>
+<li><p><strong>nef</strong> (<em>int</em>) – The number of base feature maps used in the first convolutional layer.</p></li>
+<li><p><strong>error</strong> (<em>float</em><em>, </em><em>optional</em>) – The error on the estimates from the network. Default is None which takes the last training error from the model file.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.shaun_inference.Corrector.correct_image">
+<span class="sig-name descname"><span class="pre">correct_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_inference.html#Corrector.correct_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_inference.Corrector.correct_image" title="Permalink to this definition"></a></dt>
+<dd><p>This class method does the correction on the images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>numpy.ndarray</em>) – The image to be corrected by the network.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_inference.SpeedyCorrector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_inference.</span></span><span class="sig-name descname"><span class="pre">SpeedyCorrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_inference.html#SpeedyCorrector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_inference.SpeedyCorrector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#smug.shaun_inference.Corrector" title="smug.shaun_inference.Corrector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Corrector</span></code></a></p>
+<p>This class is to do the same corrections but using the torchscript model. This is ~4x faster but limits the batch size to 16.</p>
+<p>N.B. Currently the torchscript models are not provided as part of smug.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<em>str</em>) – The path to the torchscript model.</p></li>
+<li><p><strong>error</strong> (<em>float</em>) – The error to apply to the estimates.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="smug.shaun_inference.pretrained_shaun_corrector">
+<span class="sig-prename descclassname"><span class="pre">smug.shaun_inference.</span></span><span class="sig-name descname"><span class="pre">pretrained_shaun_corrector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">device</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#smug.shaun_inference.Corrector" title="smug.shaun_inference.Corrector"><span class="pre">Corrector</span></a></span></span><a class="reference internal" href="_modules/smug/shaun_inference.html#pretrained_shaun_corrector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_inference.pretrained_shaun_corrector" title="Permalink to this definition"></a></dt>
+<dd><p>Load a pretrained Shaun model in a corrector. The weights will be cached As described by <cite>torch.hub</cite>. See their documentation for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>str</em>) – The spectral line to load the weights for, “Halpha” or “CaII8542”</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – The version of the model to load. Default: 1.0.0</p></li>
+<li><p><strong>map_location</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Where to remap arrays during the loading process, by default this is set
+to “CPU” to allow loading on any platform.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-smug.shaun_model">
+<span id="smug-shaun-model-module"></span><h2>smug.shaun_model module<a class="headerlink" href="#module-smug.shaun_model" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="smug.shaun_model.Shaun">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">smug.shaun_model.</span></span><span class="sig-name descname"><span class="pre">Shaun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nef</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_model.html#Shaun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_model.Shaun" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>This is the base class for the neural network model for correcting for seeing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of channels that the images have.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of channels that the output images have.</p></li>
+<li><p><strong>nef</strong> (<em>int</em>) – The base number of feature maps to use for the first convolutional layer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="smug.shaun_model.Shaun.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/smug/shaun_model.html#Shaun.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#smug.shaun_model.Shaun.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="radynversion-api.html" class="btn btn-neutral float-left" title="Radynversion API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, C. Osborne, Astronomy &amp; Astrophysics, University of Glasgow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
