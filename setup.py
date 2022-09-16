@@ -11,6 +11,6 @@ setup(
         "weno4",
         "astropy",
         "FrEIA @ git+https://github.com/VLL-HD/FrEIA.git",
-        "sst-crispy @ git+https://github.com/Goobley/crispy.git",
+        "sst-crispy @ git+https://github.com/GlasgowSolarPhysics/crispy.git",
     ],
 )
