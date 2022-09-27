@@ -16,7 +16,7 @@ def test_transform_vel():
     v = torch.randn(50) * 20
     v_scaled = ad.transform_vel(v)
     v_prime = ad.inv_transform_vel(v_scaled)
-    tt.assert_allclose(v, v_prime)
+    tt.assert_close(v, v_prime)
 
 
 def test_transform_ne():
@@ -24,7 +24,7 @@ def test_transform_ne():
     ne = torch.logspace(17, 5, 50)
     ne_scaled = ad.transform_ne(ne)
     ne_prime = ad.inv_transform_ne(ne_scaled)
-    tt.assert_allclose(ne, ne_prime)
+    tt.assert_close(ne, ne_prime)
 
 
 def test_transform_temperature():
@@ -32,7 +32,7 @@ def test_transform_temperature():
     temp = torch.logspace(4, 7, 50)
     temp_scaled = ad.transform_temperature(temp)
     temp_prime = ad.inv_transform_temperature(temp_scaled)
-    tt.assert_allclose(temp, temp_prime)
+    tt.assert_close(temp, temp_prime)
 
 
 def test_unit_conversion():
@@ -81,7 +81,7 @@ def test_transform_atmosphere():
     result[:, :50] = ad.transform_ne(ne)
     result[:, 50:100] = ad.transform_temperature(temp)
     result[:, 100:150] = ad.transform_vel(vel)
-    tt.assert_allclose(fn_result, result)
+    tt.assert_close(fn_result, result)
 
 
 def test_transform_atmosphere_fails():
@@ -115,9 +115,9 @@ def test_inv_transform_atmosphere():
     manual_transform[:, 100:150] = ad.transform_vel(vel)
 
     result = ad.inv_transform_atmosphere(manual_transform)
-    tt.assert_allclose(vel[None, :], result["vel"])
-    tt.assert_allclose(ne, result["ne"])
-    tt.assert_allclose(temp, result["temperature"])
+    tt.assert_close(vel[None, :], result["vel"], check_dtype=False)
+    tt.assert_close(ne, result["ne"], check_dtype=False)
+    tt.assert_close(temp, result["temperature"], check_dtype=False)
 
 
 def test_line_grids():
@@ -163,8 +163,8 @@ def test_transform_lines():
         },
     )
 
-    tt.assert_allclose(torch.linspace(0, 0.5, 31)[None, :], trans_lines["Halpha"])
-    tt.assert_allclose(torch.linspace(1, 0.25, 31)[None, :], trans_lines["CaII8542"])
+    tt.assert_close(torch.linspace(0, 0.5, 31)[None, :], trans_lines["Halpha"])
+    tt.assert_close(torch.linspace(1, 0.25, 31)[None, :], trans_lines["CaII8542"])
 
 
 def test_forward_model():

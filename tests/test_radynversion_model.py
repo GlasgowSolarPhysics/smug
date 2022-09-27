@@ -1,6 +1,5 @@
 import pytest
 import torch
-import torch.testing as tt
 from smug.radynversion_model import pretrained_radynversion
 
 
