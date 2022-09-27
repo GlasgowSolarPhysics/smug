@@ -16,8 +16,21 @@ The models in this package are primarily based on the PhDs of [John Armstrong](h
 
 ### Examples and Documentation
 
-Coming soon.
+See https://GlasgowSolarPhysics.github.io/
 
 ### Installation
 
+(Coming soon)
+```python
+python -m pip install smug
+```
+
+or install from the repository with
+
+```python
+python -m pip install .
+```
+
 ### Tests
+
+Tests are automatically run via GitHub actions but can be run locally by cloning the repository and running `pytest` in the root directory.
