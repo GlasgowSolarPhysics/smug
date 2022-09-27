@@ -21,13 +21,13 @@ See https://GlasgowSolarPhysics.github.io/
 ### Installation
 
 (Coming soon)
-```python
+```bash
 python -m pip install smug
 ```
 
 or install from the repository with
 
-```python
+```bash
 python -m pip install .
 ```
 
