@@ -16,8 +16,7 @@ The models in this package are primarily based on the PhDs of [John Armstrong](h
 
 ### Examples and Documentation
 
-See https://GlasgowSolarPhysics.github.io/
-
+See https://GlasgowSolarPhysics.github.io/smug
 ### Installation
 
 (Coming soon)
